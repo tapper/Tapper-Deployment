@@ -27,14 +27,16 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
         cd OSRC-TestSuites
         git pull
         for module in $TAPPERMODULES ; do
+            cd /tmp/OSRC-TestSuites/python/$module
             echo "" ; echo "" ; echo ""
             echo "********************** $module (from git) **********************************"
+            echo "                       (" `pwd` ")"
             echo "" ; echo "" ; echo ""
-            dist=$(echo $module | sed -e 's/::/-/g')
-            cd /tmp/OSRC-TestSuites/python/$module
             rm -f dist/*.egg
+            set -x
             ${PYTHONPREFIX}/bin/python setup.py bdist_egg
             ${PYTHONPREFIX}/bin/easy_install -Z dist/*.egg  # -Z to unpack egg file
+            set +x
         done
     fi
 fi
