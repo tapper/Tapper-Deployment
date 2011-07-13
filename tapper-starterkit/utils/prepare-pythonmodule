@@ -35,7 +35,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
             rm -f dist/*.egg
             set -x
             ${PYTHONPREFIX}/bin/python setup.py bdist_egg
-            ${PYTHONPREFIX}/bin/easy_install dist/*.egg
+            ${PYTHONPREFIX}/bin/easy_install -Z dist/*.egg
             set +x
         done
     fi
