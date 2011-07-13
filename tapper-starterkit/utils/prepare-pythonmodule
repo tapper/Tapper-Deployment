@@ -34,7 +34,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
             cd /tmp/OSRC-TestSuites/python/$module
             rm -f dist/*.egg
             ${PYTHONPREFIX}/bin/python setup.py bdist_egg
-            ${PYTHONPREFIX}/bin/easy_install dist/*.egg
+            ${PYTHONPREFIX}/bin/easy_install -Z dist/*.egg  # -Z to unpack egg file
         done
     fi
 fi
