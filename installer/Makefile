@@ -128,7 +128,8 @@ PYTHONBIN=$(PYTHONDIR)/bin
 PYTHONPREPARE=prepare-optpython
 
 ### opentftpd
-OPENTFTPDURL=http://downloads.sourceforge.net/project/tftp-server/tftp%20server%20single%20port/opentftpspV1.65.tar.gz
+#OPENTFTPDURL=http://downloads.sourceforge.net/project/tftp-server/tftp%20server%20single%20port/opentftpspV1.65.tar.gz
+OPENTFTPDURL=http://renormalist.net/tftp/opentftpmtV1.62.tar.gz # the last working TFTP in the world :-/
 
 # Debian automatic install
 APTGETOPTIONS=-o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --yes
@@ -899,7 +900,7 @@ opentftpd:
 	-# This fragile opentftpd fiddling is not nice, we know...
 	-/etc/init.d/atftpd stop
 	sleep 2
-	/etc/init.d/opentftp stop
+	-/etc/init.d/opentftp stop
 	sleep 2
 	/etc/init.d/opentftp start
 
@@ -1107,7 +1108,7 @@ web: workingdirs dependencies tapperconfig libdeps optperl testplan
 # So just choose one of those two here that works for you:
 #   atftp
 #   opentftpd
-tftpserver: atftp
+tftpserver: opentftpd
 
 atftp:
 #
