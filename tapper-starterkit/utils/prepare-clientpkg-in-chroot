@@ -30,6 +30,7 @@ export PYTHONSTATICTWEAKS
 
 # Perl libs
 /tmp/tapper-starterkit/utils/prepare-perlmodule \
+ Tapper::Remote \
  Tapper::PRC \
  Tapper::Installer \
  Tapper::TestSuite::AutoTest \
