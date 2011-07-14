@@ -36,6 +36,21 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
         rm -fr $dist
         git clone ${GITPREFIXTAPPERLIBS}/$dist
         cd $dist
+
+        # recursively resolve dependencies in git
+        DEPENDENCIES=$(grep "requires.*'Tapper::" Makefile.PL | cut -d"'" -f2 | sort | uniq)
+        DEPENDENCIES="$(echo $DEPENDENCIES)" # strip newlines
+        echo "*** GIT TAPPER DEPENDENCIES: $DEPENDENCIES"
+        for d in $DEPENDENCIES ; do
+            if echo "$INSTALLEDTAPPERDEPS dummyHfill" | grep -q "\b${d}[^:]" ; then
+                echo "    GIT TAPPER DEPENDENCY: $d already installed"
+            else
+                echo "    GIT TAPPER DEPENDENCY: $d"
+                export INSTALLEDTAPPERDEPS="$d $INSTALLEDTAPPERDEPS"
+                /tmp/tapper-starterkit/utils/prepare-perlmodule $d
+            fi
+        done
+
         perl Makefile.PL
         make
         make manifest
