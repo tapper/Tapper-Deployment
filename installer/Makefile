@@ -872,7 +872,8 @@ libdeps:
 	$(APTGET) install expect-dev
 	$(APTGET) install libssl-dev
 	$(APTGET) install mysql-server
-	$(APTGET) install libmysqlclient-dev
+	-$(APTGET) install libmysqlclient-dev
+	-$(APTGET) install libmysqlclient15-dev
 	$(APTGET) install libsqlite3-0
 	$(APTGET) install sqlite3
 	$(APTGET) install libxml2
