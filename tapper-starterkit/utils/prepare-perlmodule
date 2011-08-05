@@ -12,6 +12,7 @@ export TWMC_TEST_PORT=9876
 export PERL_AUTOINSTALL="--defaultdeps"
 export TEST_JOBS=${CPUCOUNT}
 export CPAN=/opt/tapper/perl/perls/current/bin/cpan
+export PERL=/opt/tapper/perl/perls/current/bin/perl
 . /opt/tapper/perl/etc/bashrc
 
 TAPPERMODULES="$*"
@@ -51,7 +52,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
             fi
         done
 
-        perl Makefile.PL
+        $PERL Makefile.PL
         make
         make manifest
         DISTDIR=$(make distdir 2>&1 | grep 'rm -rf ' | cut -d" " -f3-)
