@@ -27,6 +27,7 @@ for module in $TAPPERMODULES ; do
 done
 if [ "x1" == "x$TAPPERFROMGIT" ] ; then
     $CPAN Module::Install::AuthorRequires
+    $CPAN Module::Install::WriteAll
     $CPAN Module::Install
     for module in $TAPPERMODULES ; do
         echo "" ; echo "" ; echo ""
