@@ -38,6 +38,20 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
         rm -fr $dist
         git clone ${GITPREFIXTAPPERLIBS}/$dist
         cd $dist
+        DISTTRACKFILE=/tmp/tapper_last_gitrev_${dist}
+        CURRENT_REV=$(git rev-parse HEAD)
+        if [ -r $DISTTRACKFILE ] ; then
+            LAST_REV=$(cat $DISTTRACKFILE)
+        else
+            LAST_REV=none
+        fi
+
+        if [ "x$CURRENT_REV" = "x$LAST_REV" ] ; then
+            echo ""
+            echo "*** $dist is up-to-date ($CURRENT_REV)"
+            echo ""
+            break
+        fi
 
         # recursively resolve dependencies in git
         DEPENDENCIES=$(grep "requires.*'Tapper::" Makefile.PL | cut -d"'" -f2 | sort | uniq)
@@ -60,6 +74,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
         DISTDIR=$(make distdir 2>&1 | grep 'rm -rf ' | cut -d" " -f3-)
         cd $DISTDIR
         $CPAN -f .
+        echo $CURRENT_REV > $DISTTRACKFILE
     done
 fi
 
