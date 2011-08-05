@@ -1028,13 +1028,13 @@ schema-upgrade: schema cli
 	-$(PERL) $(PERLBIN)/tapper-db-deploy upgrade --db ReportsDB
 	-$(PERL) $(PERLBIN)/tapper-db-deploy upgrade --db TestrunDB
 	for DAEMON in \
-	  /etc/init.d/tapper_reports_receiver_daemon \
+	  /etc/init.d/tapper_reports_receivDAEMONer_daemon \
 	  /etc/init.d/tapper_reports_api_daemon \
 	  /etc/init.d/tapper_action_daemon \
 	  /etc/init.d/tapper_mcp_daemon \
 	  /etc/init.d/apache2 ; \
 	do \
-	  if [ -e $$D ] ; then $$D restart ; fi ; \
+	  if [ -e $$DAEMON ] ; then $$DAEMON restart ; fi ; \
 	done
 	-### Explicitely do *not* restart tapper_mcp_msg_receiver_daemon!
 	-### This has to be done manually to ensure a human thinks about it.
