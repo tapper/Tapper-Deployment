@@ -53,6 +53,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
             fi
         done
 
+        echo "***************** continue $module (from git) *******************"
         $PERL Makefile.PL
         make
         make manifest
