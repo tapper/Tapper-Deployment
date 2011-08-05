@@ -1033,7 +1033,7 @@ schema-upgrade: schema cli
 	  /etc/init.d/tapper_action_daemon \
 	  /etc/init.d/tapper_mcp_daemon \
 	  /etc/init.d/apache2 ; \
-	do
+	do \
 	  if [ -e $D ] ; then $D restart ; fi ; \
 	done
 	-### Explicitely do *not* restart tapper_mcp_msg_receiver_daemon!
