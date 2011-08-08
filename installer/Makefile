@@ -1190,3 +1190,24 @@ so: engage
 
 it:
 	@echo "Make it so!"
+
+upgrade: web cli api receiver testplan
+	@echo "Upgraded the most usual components:"
+	@echo ""
+	@echo " - web"
+	@echo " - cli"
+	@echo " - api"
+	@echo " - receiver"
+	@echo " - testplan"
+	@echo " - schema-upgrade"
+	@echo ""
+	@echo ""
+	@echo "You might want to additionally install special targets:"
+	@echo ""
+	@echo " - mcp            (central automation layer, if used)"
+	@echo " - action         (sub component of automation, if used)"
+	@echo " - mcpmsgreceiver (message receiver -> rarely needs update)"
+	@echo " - clientpkgs     (toolchain for test execution)"
+	@echo " - baseimages     (OS images for virtualization)"
+	@echo " - nfsroot++      (upgrade NFS root OS for network boot)"
+	@echo ""
