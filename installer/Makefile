@@ -161,6 +161,8 @@ LOCALCLEANFILES=$(TMP)/$(STARTERKIT) \
 
 CPUCOUNT = `cat /proc/cpuinfo | grep vendor_id|wc -l`
 
+CPAN_INSTALL = PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN)
+
 # default target
 help:
 	@echo ""
@@ -921,19 +923,19 @@ perlpkgs:
 #
 	@echo "########## Prepare CPAN libs"
 	-# File::Slurp 9999.14 from 22 Mar 2011 introduced silly test bug, force install.
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) -f File::Slurp
+	$(CPAN_INSTALL) -f File::Slurp
 	-# work around forgotten dependency in T::R::Web 3.0.4
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) File::Copy::Recursive
+	$(CPAN_INSTALL) File::Copy::Recursive
 	-# fails sometimes in non-critical tests
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) -f Test::WWW::Mechanize
-	-#PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) TWMC_TEST_PORT=9876 $(CPAN) -f Test::WWW::Mechanize::Catalyst
+	$(CPAN_INSTALL) -f Test::WWW::Mechanize
+	-#TWMC_TEST_PORT=9876 $(CPAN_INSTALL) -f Test::WWW::Mechanize::Catalyst
 	-# work around missing deps in HTML::FormFu
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) -f IO::Interactive
+	$(CPAN_INSTALL) -f IO::Interactive
 	-# non problematic rest
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) DBI
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) DBD::mysql
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) DBD::SQLite
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) Module::Install::Catalyst
+	$(CPAN_INSTALL) DBI
+	$(CPAN_INSTALL) DBD::mysql
+	$(CPAN_INSTALL) DBD::SQLite
+	$(CPAN_INSTALL) Module::Install::Catalyst
 
 databases:
 #
@@ -1075,8 +1077,8 @@ mcp: workingdirs dependencies tapperconfig libdeps optperl
 #
 	@echo "########## start scripts for MCP"
 	-# Proc::ProcessTable 0.45 (needed by App::Daemon) has problems using threads (undefined symbol pthread_once)
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) D/DU/DURIST/Proc-ProcessTable-0.44.tar.gz
-	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) App::Daemon
+	$(CPAN_INSTALL) D/DU/DURIST/Proc-ProcessTable-0.44.tar.gz
+	$(CPAN_INSTALL) App::Daemon
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Schema
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Producer
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::MCP
