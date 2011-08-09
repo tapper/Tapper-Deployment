@@ -1074,6 +1074,8 @@ mcp: workingdirs dependencies tapperconfig libdeps optperl
 # start scripts for MCP
 #
 	@echo "########## start scripts for MCP"
+	-# Proc::ProcessTable 0.45 (needed by App::Daemon) has problems using threads (undefined symbol pthread_once)
+	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) D/DU/DURIST/Proc-ProcessTable-0.44.tar.gz
 	PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN) App::Daemon
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Schema
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Producer
