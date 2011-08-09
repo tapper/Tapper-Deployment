@@ -900,7 +900,7 @@ opentftpd:
 	rsync -rc $(TMP)/opentftp/ /opt/opentftp/
 	cp $(STARTERKITDIR)/etc/opentftp.ini /etc/
 	cp $(STARTERKITDIR)/etc/init.d/opentftp /etc/init.d/
-	$(INSSERV) opentftp || $(UPDATERC) opentftp
+	$(INSSERV) opentftp || $(UPDATERC) opentftp defaults
 	-# We do not use atftp anymore as it can not serve big files (like images)
 	-# This fragile opentftpd fiddling is not nice, we know...
 	-/etc/init.d/atftpd stop
@@ -909,7 +909,8 @@ opentftpd:
 	sleep 2
 	/etc/init.d/opentftp start
 
-# ** TODO hardwaredb changes trigger "ssh root@tapper -c make hwdbsync"
+# OSRC specific: hardware inventory DB synced into scheduler db
+# TODO: hardwaredb changes trigger "ssh root@tapper -c make hwdbsync"
 hwdbsync:
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::HardwareDB
 	$(PERLBIN)/hardwaredb_transfer
@@ -1009,7 +1010,7 @@ receiver: workingdirs dependencies tapperconfig libdeps optperl
 	@echo "########## start scripts for reports-receiver"
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Reports::Receiver
 	cp $(STARTERKITDIR)/etc/init.d/tapper_reports_receiver_daemon /etc/init.d/
-	$(INSSERV) tapper_reports_receiver_daemon || $(UPDATERC) tapper_reports_receiver_daemon
+	$(INSSERV) tapper_reports_receiver_daemon || $(UPDATERC) tapper_reports_receiver_daemon defaults
 	/etc/init.d/tapper_reports_receiver_daemon stop
 	sleep 5
 	/etc/init.d/tapper_reports_receiver_daemon start
@@ -1065,7 +1066,7 @@ action: workingdirs dependencies tapperconfig libdeps optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Action
 	cp $(STARTERKITDIR)/etc/init.d/tapper_action_daemon /etc/init.d/
 	chmod 755 /etc/init.d/tapper_action_daemon
-	$(INSSERV) tapper_action_daemon || $(UPDATERC) tapper_action_daemon
+	$(INSSERV) tapper_action_daemon || $(UPDATERC) tapper_action_daemon defaults
 	/etc/init.d/tapper_action_daemon restart
 
 mcp: workingdirs dependencies tapperconfig libdeps optperl
@@ -1078,7 +1079,7 @@ mcp: workingdirs dependencies tapperconfig libdeps optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Producer
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::MCP
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_daemon /etc/init.d/
-	$(INSSERV) tapper_mcp_daemon || $(UPDATERC) tapper_mcp_daemon
+	$(INSSERV) tapper_mcp_daemon || $(UPDATERC) tapper_mcp_daemon defaults
 	/etc/init.d/tapper_mcp_daemon stop
 	-ps aux | grep -v awk | grep -v grep | awk '/mcp-daemon/ {print $$2}' | xargs kill $$1
 	/etc/init.d/tapper_mcp_daemon start
@@ -1092,7 +1093,7 @@ mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Schema
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::MCP::MessageReceiver
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_msg_receiver_daemon /etc/init.d/
-	$(INSSERV) tapper_mcp_msg_receiver_daemon || $(UPDATERC) tapper_mcp_msg_receiver_daemon
+	$(INSSERV) tapper_mcp_msg_receiver_daemon || $(UPDATERC) tapper_mcp_msg_receiver_daemon defaults
 	/etc/init.d/tapper_mcp_msg_receiver_daemon restart
 
 web: workingdirs dependencies tapperconfig libdeps optperl testplan
