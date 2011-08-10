@@ -859,6 +859,13 @@ nfsserver:
 	-# later append: 192.168.1.0/255.255.255.0(fsid=0,no_root_squash,no_subtree_check,rw)
 	/etc/init.d/nfs-kernel-server restart
 
+mysql:
+	$(APTGET) install mysql-server
+
+apache2:
+	$(APTGET) install apache2
+	$(APTGET) install libapache2-mod-fcgid
+
 libdeps:
 #
 # Prepare packages
@@ -877,7 +884,6 @@ libdeps:
 	$(APTGET) install expect
 	$(APTGET) install expect-dev
 	$(APTGET) install libssl-dev
-	$(APTGET) install mysql-server
 	-$(APTGET) install libmysqlclient-dev
 	-$(APTGET) install libmysqlclient15-dev
 	$(APTGET) install libsqlite3-0
@@ -886,8 +892,6 @@ libdeps:
 	$(APTGET) install libxml2-dev
 	$(APTGET) install libexpat1
 	$(APTGET) install libexpat1-dev
-	$(APTGET) install apache2
-	$(APTGET) install libapache2-mod-fcgid
 
 opentftpd:
 #
@@ -1017,7 +1021,7 @@ log4perlconfig: /etc/log4perl.cfg
 	  cp $(STARTERKITDIR)/etc/log4perl.cfg /etc/ ; \
 	fi
 
-receiver: workingdirs dependencies tapperconfig libdeps optperl
+receiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
 # start scripts for reports-receiver
 #
@@ -1061,7 +1065,7 @@ schema-upgrade: schema cli
 testplan: workingdirs dependencies tapperconfig libdeps optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Testplan
 
-api: workingdirs dependencies tapperconfig libdeps optperl
+api: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
 # start scripts for reports-api
 #
@@ -1071,7 +1075,7 @@ api: workingdirs dependencies tapperconfig libdeps optperl
 	$(INSSERV) tapper_reports_api_daemon || $(UPDATERC) tapper_reports_api_daemon defaults
 	/etc/init.d/tapper_reports_api_daemon restart
 
-action: workingdirs dependencies tapperconfig libdeps optperl
+action: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
 # start scripts for Tapper::Action
 #
@@ -1083,7 +1087,7 @@ action: workingdirs dependencies tapperconfig libdeps optperl
 	$(INSSERV) tapper_action_daemon || $(UPDATERC) tapper_action_daemon defaults
 	/etc/init.d/tapper_action_daemon restart
 
-mcp: workingdirs dependencies tapperconfig libdeps optperl
+mcp: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
 # start scripts for MCP
 #
@@ -1100,7 +1104,7 @@ mcp: workingdirs dependencies tapperconfig libdeps optperl
 	-ps aux | grep -v awk | grep -v grep | awk '/mcp-daemon/ {print $$2}' | xargs kill $$1
 	/etc/init.d/tapper_mcp_daemon start
 
-mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps optperl
+mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
 # start scripts for MCP Message Receiver
 #
@@ -1112,7 +1116,7 @@ mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps optperl
 	$(INSSERV) tapper_mcp_msg_receiver_daemon || $(UPDATERC) tapper_mcp_msg_receiver_daemon defaults
 	/etc/init.d/tapper_mcp_msg_receiver_daemon restart
 
-web: workingdirs dependencies tapperconfig libdeps optperl testplan
+web: workingdirs dependencies tapperconfig libdeps mysql apache2 optperl testplan
 #
 # start scripts for web frontend
 #
@@ -1167,7 +1171,7 @@ testquery: receiver
 
 localsetup: workingdirs dependencies \
             tapperconfig \
-            libdeps optperl perlpkgs optpython \
+            libdeps mysql apache2 optperl perlpkgs optpython \
             cli databases \
             receiver web api \
             testreport \
