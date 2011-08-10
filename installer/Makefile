@@ -631,7 +631,7 @@ $(BASEIMAGE32CHROOT)/etc/log4perl.cfg:
 	cd $(BASEIMAGE32CHROOT)/tmp/ ; tar xzf $(TMP)/$(STARTERKIT)
 	$(SCRIPTENVIRONMENT) linux32 chroot $(BASEIMAGE32CHROOT) /tmp/tapper-starterkit/utils/$(BASEIMAGE32CHROOTPREPARE)
 
-clientpkgs: clientpkg64 clientpkg32
+clientpkgs: libdeps clientpkg64 clientpkg32
 clientpkgs++: clientpkg64++ clientpkg32++
 
 allautomation: cleanstarterkit \
