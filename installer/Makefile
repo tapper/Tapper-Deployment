@@ -693,7 +693,7 @@ updateclientpkg64:
 	-umount $(CLIENTPKG64CHROOT)/proc
 	-umount $(CLIENTPKG64CHROOT)/dev/pts
 	cd $(CLIENTPKG64CHROOT) ; \
-	  cp $(CLIENTPKG64FILE) $(CLIENTPKG64FILE)_bak_`date +%Y%m%d%H%M` ; \
+	  if [ -r $(CLIENTPKG64FILE) ] ; then cp $(CLIENTPKG64FILE) $(CLIENTPKG64FILE)_bak_`date +%Y%m%d%H%M` ; fi ; \
 	  tar -czf $(CLIENTPKG64FILE) opt/
 
 
@@ -744,7 +744,7 @@ updateclientpkg32:
 	-umount $(CLIENTPKG32CHROOT)/proc
 	-umount $(CLIENTPKG32CHROOT)/dev/pts
 	cd $(CLIENTPKG32CHROOT) ; \
-	  cp $(CLIENTPKG32FILE) $(CLIENTPKG32FILE)_bak_`date +%Y%m%d%H%M` ; \
+	  if [ -r $(CLIENTPKG32FILE) ] ; then cp $(CLIENTPKG32FILE) $(CLIENTPKG32FILE)_bak_`date +%Y%m%d%H%M` ; fi ; \
 	  tar -czf $(CLIENTPKG32FILE) opt/
 
 
@@ -801,7 +801,7 @@ $(BASEIMAGE64FILE): $(BASEIMAGE64CHROOT)/etc/log4perl.cfg
 	-umount $(BASEIMAGE64CHROOT)/proc
 	-umount $(BASEIMAGE64CHROOT)/dev/pts
 	cd $(BASEIMAGE64CHROOT) ; \
-	  cp $(BASEIMAGE64FILE) $(BASEIMAGE64FILE)_bak_`date +%Y%m%d%H%M` ; \
+	  if [ -r $(BASEIMAGE64FILE) ] ; then cp $(BASEIMAGE64FILE) $(BASEIMAGE64FILE)_bak_`date +%Y%m%d%H%M` ; fi ; \
 	  tar -czf $(BASEIMAGE64FILE) .
 
 $(BASEIMAGE32FILE): $(BASEIMAGE32CHROOT)/etc/log4perl.cfg
@@ -813,7 +813,7 @@ $(BASEIMAGE32FILE): $(BASEIMAGE32CHROOT)/etc/log4perl.cfg
 	-umount $(BASEIMAGE32CHROOT)/proc
 	-umount $(BASEIMAGE32CHROOT)/dev/pts
 	cd $(BASEIMAGE32CHROOT) ; \
-	  cp $(BASEIMAGE32FILE) $(BASEIMAGE32FILE)_bak_`date +%Y%m%d%H%M` ; \
+	  if [ -r $(BASEIMAGE32FILE) ] ; then cp $(BASEIMAGE32FILE) $(BASEIMAGE32FILE)_bak_`date +%Y%m%d%H%M` ; fi ; \
 	  tar -czf $(BASEIMAGE32FILE) .
 
 nfsrootdir: installerchroot workingdirs
