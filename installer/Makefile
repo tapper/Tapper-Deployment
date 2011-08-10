@@ -993,17 +993,29 @@ initialdata:
 	-echo "insert into topic (name, description)  values ('Benchmark', 'Collection of values');" | mysql testrundb -utapper -ptapper
 	-echo "insert into topic (name, description)  values ('Distribution', 'OS or Compiler distribution');" | mysql testrundb -utapper -ptapper
 
-tapperconfig: /etc/tapper.cfg
+tapperconfig: log4perlconfig /etc/tapper.cfg
 
 /etc/tapper.cfg:
 #
 # Install Tapper config
+#
 	@echo "########## Install Tapper config if not exists"
 	if [ ! -e /etc/tapper.cfg ] ; then \
 	  cp $(STARTERKITDIR)/etc/tapper.cfg /etc/ ; \
           export IP=$$(ip addr | awk '/inet / {print $$2}'|grep -v 127.0.0|cut -d/ -f1) ; \
             perl -i -pne 'my $$ip=$$ENV{IP}; s/__TAPPER_HOST_IP__/$$ip/g' /etc/tapper.cfg ; \
         fi
+
+log4perlconfig: /etc/log4perl.cfg
+
+/etc/log4perl.cfg:
+#
+# copy basic Log4Perl config
+#
+	@echo "########## Install Log4perl config if not exists"
+	if [ ! -e /etc/log4perl.cfg ] ; then \
+	  cp $(STARTERKITDIR)/etc/log4perl.cfg /etc/ ; \
+	fi
 
 receiver: workingdirs dependencies tapperconfig libdeps optperl
 #
