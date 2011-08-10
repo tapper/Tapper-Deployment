@@ -434,8 +434,8 @@ $(INSTALLERCHROOT)/etc/log4perl.cfg:
 	mkdir -p $(INSTALLERCHROOT)/root/.ssh
 	if [ -r /root/.ssh/id_dsa.pub ] ; then cat /root/.ssh/id_dsa.pub >> $(INSTALLERCHROOT)/root/.ssh/authorized_keys ; fi
 	if [ -r /root/.ssh/id_rsa.pub ] ; then cat /root/.ssh/id_rsa.pub >> $(INSTALLERCHROOT)/root/.ssh/authorized_keys ; fi
-	chmod 600 $(INSTALLERCHROOT)/root/.ssh/authorized_keys
-	chmod 700 $(INSTALLERCHROOT)/root/.ssh
+	-chmod 600 $(INSTALLERCHROOT)/root/.ssh/authorized_keys
+	-chmod 700 $(INSTALLERCHROOT)/root/.ssh
 #
 ### run remaining configuration from inside the chroot
 #
@@ -516,8 +516,8 @@ $(BASEIMAGE64CHROOT)/etc/log4perl.cfg:
 	mkdir -p $(BASEIMAGE64CHROOT)/root/.ssh
 	if [ -r /root/.ssh/id_dsa.pub ] ; then cat /root/.ssh/id_dsa.pub >> $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys ; fi
 	if [ -r /root/.ssh/id_rsa.pub ] ; then cat /root/.ssh/id_rsa.pub >> $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys ; fi
-	chmod 600 $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys
-	chmod 700 $(BASEIMAGE64CHROOT)/root/.ssh
+	-chmod 600 $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys
+	-chmod 700 $(BASEIMAGE64CHROOT)/root/.ssh
 #
 ### Perl/CPAN setup
 #
@@ -594,8 +594,8 @@ $(BASEIMAGE32CHROOT)/etc/log4perl.cfg:
 	mkdir -p $(BASEIMAGE32CHROOT)/root/.ssh
 	if [ -r /root/.ssh/id_dsa.pub ] ; then cat /root/.ssh/id_dsa.pub >> $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys ; fi
 	if [ -r /root/.ssh/id_rsa.pub ] ; then cat /root/.ssh/id_rsa.pub >> $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys ; fi
-	chmod 600 $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys
-	chmod 700 $(BASEIMAGE32CHROOT)/root/.ssh
+	-chmod 600 $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys
+	-chmod 700 $(BASEIMAGE32CHROOT)/root/.ssh
 #
 ### Perl/CPAN setup
 #
