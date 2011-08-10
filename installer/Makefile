@@ -432,8 +432,8 @@ $(INSTALLERCHROOT)/etc/log4perl.cfg:
 ### ssh authorized_keys for reboot via ssh
 #
 	mkdir -p $(INSTALLERCHROOT)/root/.ssh
-	cat /root/.ssh/id_dsa.pub >> $(INSTALLERCHROOT)/root/.ssh/authorized_keys
-	cat /root/.ssh/id_rsa.pub >> $(INSTALLERCHROOT)/root/.ssh/authorized_keys
+	if [ -r /root/.ssh/id_dsa.pub ] ; then cat /root/.ssh/id_dsa.pub >> $(INSTALLERCHROOT)/root/.ssh/authorized_keys ; fi
+	if [ -r /root/.ssh/id_rsa.pub ] ; then cat /root/.ssh/id_rsa.pub >> $(INSTALLERCHROOT)/root/.ssh/authorized_keys ; fi
 	chmod 600 $(INSTALLERCHROOT)/root/.ssh/authorized_keys
 	chmod 700 $(INSTALLERCHROOT)/root/.ssh
 #
@@ -514,8 +514,8 @@ $(BASEIMAGE64CHROOT)/etc/log4perl.cfg:
 	echo 'cp="cp -i"'                              >> $(BASEIMAGE64CHROOT)/root/.bashrc
 	echo 'mv="mv -i"'                              >> $(BASEIMAGE64CHROOT)/root/.bashrc
 	mkdir -p $(BASEIMAGE64CHROOT)/root/.ssh
-	cat /root/.ssh/id_dsa.pub >> $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys
-	cat /root/.ssh/id_rsa.pub >> $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys
+	if [ -r /root/.ssh/id_dsa.pub ] ; then cat /root/.ssh/id_dsa.pub >> $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys ; fi
+	if [ -r /root/.ssh/id_rsa.pub ] ; then cat /root/.ssh/id_rsa.pub >> $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys ; fi
 	chmod 600 $(BASEIMAGE64CHROOT)/root/.ssh/authorized_keys
 	chmod 700 $(BASEIMAGE64CHROOT)/root/.ssh
 #
@@ -592,8 +592,8 @@ $(BASEIMAGE32CHROOT)/etc/log4perl.cfg:
 	echo 'cp="cp -i"'                              >> $(BASEIMAGE32CHROOT)/root/.bashrc
 	echo 'mv="mv -i"'                              >> $(BASEIMAGE32CHROOT)/root/.bashrc
 	mkdir -p $(BASEIMAGE32CHROOT)/root/.ssh
-	cat /root/.ssh/id_dsa.pub >> $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys
-	cat /root/.ssh/id_rsa.pub >> $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys
+	if [ -r /root/.ssh/id_dsa.pub ] ; then cat /root/.ssh/id_dsa.pub >> $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys ; fi
+	if [ -r /root/.ssh/id_rsa.pub ] ; then cat /root/.ssh/id_rsa.pub >> $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys ; fi
 	chmod 600 $(BASEIMAGE32CHROOT)/root/.ssh/authorized_keys
 	chmod 700 $(BASEIMAGE32CHROOT)/root/.ssh
 #
