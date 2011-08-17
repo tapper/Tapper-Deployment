@@ -113,7 +113,7 @@ TESTMACHINE3=bullock
 ### Perl setup
 ### if version changed, also change it in the *CHROOTPREPARE scripts
 PERLVERSION=5.12.3
-DISTROPREFS=http://cpansearch.perl.org/src/ANDK/CPAN-1.9600/distroprefs/
+DISTROPREFS=http://cpansearch.perl.org/src/ANDK/CPAN-1.9800/distroprefs/
 DISTROPREFSDIR=/root/.cpan/prefs
 PERLBIN=/opt/tapper/perl/perls/current/bin
 CPAN=$(PERLBIN)/cpan
