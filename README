@@ -1,17 +1,17 @@
 Tapper-Deployment
 =================
 
-This project is an AMD/OSRC specific fork of Tapper-Starterkit.
+This project is a fork of Tapper-Starterkit.
 
-The Starterkit is meant to create an initial setup of Tapper to get
+The Starterkit was meant to create an initial setup of Tapper to get
 newcomers started, it is not expected to change much.
 
 New development is mostly happening in Tapper-Deployment, containing
-lots of OSRC specific details, like additional 32bit images, client
+some of OSRC specific details, like additional 32bit images, client
 packages, Python installation and much refactoring.
 
-It is, however, also useful for other users who want to regularly
-upgrade Tapper or follow development from git.
+However, it is known to work for other users too who want to upgrade
+Tapper from CPAN or even closely follow directly from github.
 
 It should work as drop-in replacement for Tapper-Starterkit.
 
