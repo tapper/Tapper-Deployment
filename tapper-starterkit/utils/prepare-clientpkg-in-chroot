@@ -35,6 +35,7 @@ export PYTHONSTATICTWEAKS
  Tapper::Installer \
  Tapper::TestSuite::AutoTest \
  Tapper::TestSuite::Benchmark::Perl::Formance \
+ Tapper::TestSuite::Netperf \
  Tapper::TestSuite::HWTrack
 
 # ==================== Python test suites ====================
