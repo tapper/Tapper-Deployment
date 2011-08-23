@@ -1064,6 +1064,9 @@ schema-upgrade: schema cli
 
 testplan: workingdirs dependencies tapperconfig libdeps optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Testplan
+	-# allowed to fail to relax this OSRC specific part for others
+	-cp /data/tapper/live/testplan/utils/osrc/crontab  /etc/cron.d/tapper-testplan-osrc
+	-cp /data/tapper/live/testplan/utils/topic/crontab /etc/cron.d/tapper-testplan-topic
 
 api: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
