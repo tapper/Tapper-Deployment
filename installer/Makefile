@@ -1029,7 +1029,7 @@ receiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Reports::Receiver
 	cp $(STARTERKITDIR)/etc/init.d/tapper_reports_receiver_daemon /etc/init.d/
 	$(INSSERV) tapper_reports_receiver_daemon || $(UPDATERC) tapper_reports_receiver_daemon defaults
-	/etc/init.d/tapper_reports_receiver_daemon stop
+	-/etc/init.d/tapper_reports_receiver_daemon stop
 	sleep 5
 	/etc/init.d/tapper_reports_receiver_daemon start
 	sleep 2
@@ -1100,7 +1100,7 @@ mcp: workingdirs dependencies tapperconfig libdeps mysql optperl
 	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::MCP
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_daemon /etc/init.d/
 	$(INSSERV) tapper_mcp_daemon || $(UPDATERC) tapper_mcp_daemon defaults
-	/etc/init.d/tapper_mcp_daemon stop
+	-/etc/init.d/tapper_mcp_daemon stop
 	-ps aux | grep -v awk | grep -v grep | awk '/mcp-daemon/ {print $$2}' | xargs kill $$1
 	/etc/init.d/tapper_mcp_daemon start
 
