@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ### BEGIN INIT INFO
 # Provides:          TAPPER_MSGRECEIVER
@@ -22,15 +22,15 @@ test -f $TAPPER_MSGRECEIVER_BIN || { echo "$TAPPER_MSGRECEIVER_BIN not installed
 
 case "$1" in
     start)
-	echo -n "Starting TAPPER_MSGRECEIVER "
+	echo  "Starting TAPPER_MSGRECEIVER "
 	$PERL $TAPPER_MSGRECEIVER_BIN start
 	;;
     stop)
-	echo -n "Shutting down TAPPER_MSGRECEIVER "
+	echo  "Shutting down TAPPER_MSGRECEIVER "
 	$PERL $TAPPER_MSGRECEIVER_BIN stop
 	;;
     restart)
-	echo -n "Restart TAPPER_MSGRECEIVER "
+	echo  "Restart TAPPER_MSGRECEIVER "
 	$0 stop
 	$0 start
 	;;

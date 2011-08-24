@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ### BEGIN INIT INFO
 # Provides:          TAPPER_REPORTS_RECEIVER
@@ -33,7 +33,7 @@ case "$1" in
 	$PERL $TAPPER_REPORTS_RECEIVER_BIN stop
 	;;
     restart)
-	echo -n "Restart TAPPER_REPORTS_RECEIVER "
+	echo "Restart TAPPER_REPORTS_RECEIVER "
 	$0 stop
 	$0 start
 	;;
