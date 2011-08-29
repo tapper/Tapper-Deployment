@@ -917,7 +917,7 @@ opentftpd:
 # OSRC specific: hardware inventory DB synced into scheduler db
 # TODO: hardwaredb changes trigger "ssh root@tapper -c make hwdbsync"
 hwdbsync:
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::HardwareDB
+	$(PREPAREPERLMODULE) Tapper::HardwareDB
 	$(PERLBIN)/hardwaredb_transfer
 
 perlpkgs:
@@ -1025,7 +1025,7 @@ receiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 # start scripts for reports-receiver
 #
 	@echo "########## start scripts for reports-receiver"
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Reports::Receiver
+	$(PREPAREPERLMODULE) Tapper::Reports::Receiver
 	cp $(STARTERKITDIR)/etc/init.d/tapper_reports_receiver_daemon /etc/init.d/
 	$(INSSERV) tapper_reports_receiver_daemon || $(UPDATERC) tapper_reports_receiver_daemon defaults
 	-/etc/init.d/tapper_reports_receiver_daemon stop
@@ -1034,17 +1034,17 @@ receiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 	sleep 2
 
 cli: workingdirs dependencies tapperconfig libdeps optperl
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::CLI
+	$(PREPAREPERLMODULE) Tapper::CLI
 
 # OSRC specific - do not expect that on CPAN
 hardwaredb: workingdirs dependencies tapperconfig libdeps optperl
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::HardwareDB
+	$(PREPAREPERLMODULE) Tapper::HardwareDB
 
 harness: workingdirs dependencies tapperconfig libdeps optperl
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::TAP::Harness
+	$(PREPAREPERLMODULE) Tapper::TAP::Harness
 
 schema: workingdirs dependencies tapperconfig libdeps optperl
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Schema
+	$(PREPAREPERLMODULE) Tapper::Schema
 
 schema-upgrade: schema cli
 	-$(PERL) $(PERLBIN)/tapper-db-deploy upgrade --db ReportsDB
@@ -1062,7 +1062,7 @@ schema-upgrade: schema cli
 	-### This has to be done manually to ensure a human thinks about it.
 
 testplan: workingdirs dependencies tapperconfig libdeps optperl
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Testplan
+	$(PREPAREPERLMODULE) Tapper::Testplan
 	-# allowed to fail to relax this OSRC specific part for others
 	-cp /data/tapper/live/testplan/utils/osrc/crontab  /etc/cron.d/tapper-testplan-osrc
 	-cp /data/tapper/live/testplan/utils/topic/crontab /etc/cron.d/tapper-testplan-topic
@@ -1072,7 +1072,7 @@ api: workingdirs dependencies tapperconfig libdeps mysql optperl
 # start scripts for reports-api
 #
 	@echo "########## start scripts for reports-api"
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Reports::API
+	$(PREPAREPERLMODULE) Tapper::Reports::API
 	cp $(STARTERKITDIR)/etc/init.d/tapper_reports_api_daemon /etc/init.d/
 	$(INSSERV) tapper_reports_api_daemon || $(UPDATERC) tapper_reports_api_daemon defaults
 	/etc/init.d/tapper_reports_api_daemon restart
@@ -1082,8 +1082,8 @@ action: workingdirs dependencies tapperconfig libdeps mysql optperl
 # start scripts for Tapper::Action
 #
 	@echo "########## start scripts for Tapper::Action"
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Config
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Action
+	$(PREPAREPERLMODULE) Tapper::Config
+	$(PREPAREPERLMODULE) Tapper::Action
 	cp $(STARTERKITDIR)/etc/init.d/tapper_action_daemon /etc/init.d/
 	chmod 755 /etc/init.d/tapper_action_daemon
 	$(INSSERV) tapper_action_daemon || $(UPDATERC) tapper_action_daemon defaults
@@ -1097,9 +1097,9 @@ mcp: workingdirs dependencies tapperconfig libdeps mysql optperl
 	-# Proc::ProcessTable 0.45 (needed by App::Daemon) has problems using threads (undefined symbol pthread_once)
 	$(CPAN_INSTALL) D/DU/DURIST/Proc-ProcessTable-0.44.tar.gz
 	$(CPAN_INSTALL) App::Daemon
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Schema
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Producer
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::MCP
+	$(PREPAREPERLMODULE) Tapper::Schema
+	$(PREPAREPERLMODULE) Tapper::Producer
+	$(PREPAREPERLMODULE) Tapper::MCP
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_daemon /etc/init.d/
 	$(INSSERV) tapper_mcp_daemon || $(UPDATERC) tapper_mcp_daemon defaults
 	-/etc/init.d/tapper_mcp_daemon stop
@@ -1112,8 +1112,8 @@ mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
 	@echo "########## start scripts for MCP Message Receiver"
 	-# force latest schema
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Schema
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::MCP::MessageReceiver
+	$(PREPAREPERLMODULE) Tapper::Schema
+	$(PREPAREPERLMODULE) Tapper::MCP::MessageReceiver
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_msg_receiver_daemon /etc/init.d/
 	$(INSSERV) tapper_mcp_msg_receiver_daemon || $(UPDATERC) tapper_mcp_msg_receiver_daemon defaults
 	/etc/init.d/tapper_mcp_msg_receiver_daemon restart
@@ -1123,8 +1123,8 @@ web: workingdirs dependencies tapperconfig libdeps mysql apache2 optperl testpla
 # start scripts for web frontend
 #
 	@echo "########## start scripts for web frontend"
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Module::Install::Catalyst
-	$(SCRIPTENVIRONMENT) $(PREPAREPERLMODULE) Tapper::Reports::Web
+	$(PREPAREPERLMODULE) Module::Install::Catalyst
+	$(PREPAREPERLMODULE) Tapper::Reports::Web
 	cp $(STARTERKITDIR)/usecases/kernel_build.mpc $(USECASEDIR)/
 	cp $(STARTERKITDIR)/usecases/tests.yml   $(USECASEDIR)/
 	cp $(STARTERKITDIR)/etc/apache2/conf.d/tapper_reports_web.conf /etc/apache2/conf.d/
