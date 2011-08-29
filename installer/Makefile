@@ -48,7 +48,7 @@ GITPREFIXTESTSUITES ?= git://wotan
 # use local starterkit instead of download from amd64.org
 LOCALSTARTERKIT ?= 1
 
-SCRIPTENVIRONMENT = TAPPERFROMGIT=$(TAPPERFROMGIT) GITPREFIXTAPPERLIBS=$(GITPREFIXTAPPERLIBS) GITPREFIXTESTSUITES=$(GITPREFIXTESTSUITES)
+SCRIPTENVIRONMENT = PERLVERSION=$(PERLVERSION) TAPPERFROMGIT=$(TAPPERFROMGIT) GITPREFIXTAPPERLIBS=$(GITPREFIXTAPPERLIBS) GITPREFIXTESTSUITES=$(GITPREFIXTESTSUITES)
 
 # ===== General configuration =====
 
@@ -112,20 +112,18 @@ TESTMACHINE3=bullock
 
 ### Perl setup
 ### if version changed, also change it in the *CHROOTPREPARE scripts
-PERLVERSION=5.12.3
+PERLVERSION ?= 5.12.3
 DISTROPREFS=http://cpansearch.perl.org/src/ANDK/CPAN-1.9800/distroprefs/
 DISTROPREFSDIR=/root/.cpan/prefs
 PERLBIN=/opt/tapper/perl/perls/current/bin
 CPAN=$(PERLBIN)/cpan
 PERL=$(PERLBIN)/perl
-
-### Python setup
-PERLPREPARE=prepare-optperl
+PERLPREPARE = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-optperl
 
 ### Python setup
 PYTHONDIR=/opt/tapper/python
 PYTHONBIN=$(PYTHONDIR)/bin
-PYTHONPREPARE=prepare-optpython
+PYTHONPREPARE = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-optpython
 
 ### opentftpd
 #OPENTFTPDURL=http://downloads.sourceforge.net/project/tftp-server/tftp%20server%20single%20port/opentftpspV1.65.tar.gz
@@ -143,7 +141,8 @@ STARTERKIT=$(STARTERKITBASENAME).tgz
 STARTERKITURL=http://amd64.org/pub/tapper/$(STARTERKIT)
 STARTERKITDIR=$(TMP)/$(STARTERKITBASENAME)
 
-PREPAREPERLMODULE=$(STARTERKITDIR)/utils/prepare-perlmodule
+PREPAREPERLMODULE   = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-perlmodule
+PREPAREPYTHONMODULE = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-pythonmodule
 
 ### intermediate build files, not the final results
 CLEANFILES = $(TMP)/$(STARTERKIT) \
@@ -830,8 +829,8 @@ $(PERLBIN)/perl:
 # Install Perl
 #
 	@echo "########## Install Perl"
-#	chmod +x $(STARTERKITDIR)/utils/$(PERLPREPARE)
-	$(STARTERKITDIR)/utils/$(PERLPREPARE)
+#	chmod +x $(PERLPREPARE)
+	$(PERLPREPARE)
 
 optpython: dependencies $(PYTHONBIN)/python
 
@@ -840,13 +839,13 @@ $(PYTHONBIN)/python:
 # Install Python
 #
 	@echo "########## Install Python"
-	$(STARTERKITDIR)/utils/$(PYTHONPREPARE)
+	$(PYTHONPREPARE)
 
 temare: optpython
 #
 # Install temare
 #
-	$(STARTERKITDIR)/utils/prepare-pythonmodule temare
+	$(PREPAREPYTHONMODULE)
 
 nfsserver:
 #
