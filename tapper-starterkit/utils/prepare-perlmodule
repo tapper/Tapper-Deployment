@@ -5,9 +5,10 @@ export TAPPERFROMGIT
 export GITPREFIXTAPPERLIBS
 export GITPREFIXTESTSUITES
 export PYTHONSTATICTWEAKS
+export PERLVERSION
 
 export CPUCOUNT=`cat /proc/cpuinfo | grep vendor_id | wc -l`
-export PERLVERSION=5.12.3
+export PERLVERSION=${PERLVERSION:-5.12.3}
 export PERLBREW_ROOT=/opt/tapper/perl
 export TWMC_TEST_PORT=9876
 export PERL_AUTOINSTALL="--defaultdeps"
