@@ -1050,7 +1050,7 @@ schema-upgrade: schema cli
 	-$(PERL) $(PERLBIN)/tapper-db-deploy upgrade --db ReportsDB
 	-$(PERL) $(PERLBIN)/tapper-db-deploy upgrade --db TestrunDB
 	for DAEMON in \
-	  /etc/init.d/tapper_reports_receivDAEMONer_daemon \
+	  /etc/init.d/tapper_reports_receiver_daemon \
 	  /etc/init.d/tapper_reports_api_daemon \
 	  /etc/init.d/tapper_action_daemon \
 	  /etc/init.d/tapper_mcp_daemon \
