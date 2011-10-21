@@ -1169,7 +1169,8 @@ testreport: receiver
 testquery: receiver
 # test report
 	@echo "*** The following output comes from the query interface"
-	cat $(STARTERKITDIR)/misc/starterkit.query | netcat -q5 -w5 $(TAPPER_SERVER)
+	OURTAPPERAPIPORT=$$(echo $$(cat /etc/tapper.cfg |grep '^report_api_port:'|cut -d: -f2)) ; \
+	  cat $(STARTERKITDIR)/misc/starterkit.query | netcat -q5 -w5 $(TAPPER_SERVER) $$OURTAPPERAPIPORT
 
 localsetup: workingdirs dependencies \
             tapperconfig \
