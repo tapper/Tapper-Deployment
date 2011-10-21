@@ -1056,7 +1056,7 @@ schema-upgrade: schema cli
 	  /etc/init.d/tapper_mcp_daemon \
 	  /etc/init.d/apache2 ; \
 	do \
-	  if [ -e $$DAEMON ] ; then $$DAEMON restart ; fi ; \
+	  if [ -e $$DAEMON ] ; then $$DAEMON stop ; $$DAEMON start ; fi ; \
 	done
 	-### Explicitely do *not* restart tapper_mcp_msg_receiver_daemon!
 	-### This has to be done manually to ensure a human thinks about it.
