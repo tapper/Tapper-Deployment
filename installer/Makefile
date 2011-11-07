@@ -845,7 +845,7 @@ temare: optpython
 #
 # Install temare
 #
-	$(PREPAREPYTHONMODULE)
+	$(PREPAREPYTHONMODULE) temare
 
 nfsserver:
 #
