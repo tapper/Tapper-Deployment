@@ -843,9 +843,16 @@ $(PYTHONBIN)/python:
 
 temare: optpython
 #
-# Install temare
+# Install temare - very OSRC-specific
 #
-	$(PREPAREPYTHONMODULE) temare
+	cd /tmp/ ; if [ ! -d OSRC-Tapper ] ; then git clone git://wotan/OSRC-Tapper ; fi
+	cd /tmp/OSRC-Tapper/src/temare ; git pull ; \
+	  echo "********************** temare (from git) **********************************" ; \
+	  rm -f dist/*.egg ; \
+	  set -x ; \
+	  $(PYTHONBIN)/python setup.py bdist_egg ; \
+	  $(PYTHONBIN)/easy_install -Z dist/*.egg ; \
+	  set +x
 
 nfsserver:
 #
