@@ -144,6 +144,13 @@ STARTERKITDIR=$(TMP)/$(STARTERKITBASENAME)
 PREPAREPERLMODULE   = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-perlmodule
 PREPAREPYTHONMODULE = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-pythonmodule
 
+### Codespeed
+CODESPEED_INSTANCENAME ?= speedcenter
+CODESPEED_GITURL       ?= git://github.com/tobami/codespeed.git
+CODESPEED_BASEURL      ?= http://$(TAPPER_SERVER)/speed
+CODESPEED_DIR          ?= /opt/tapper/codespeed/$(CODESPEED_INSTANCENAME)
+CODESPEED_URLSFILE      = $(CODESPEED_DIR)/urls.py
+
 ### intermediate build files, not the final results
 CLEANFILES = $(TMP)/$(STARTERKIT) \
              $(STARTERKITDIR) \
@@ -853,6 +860,45 @@ temare: optpython
 	  $(PYTHONBIN)/python setup.py bdist_egg ; \
 	  $(PYTHONBIN)/easy_install -Z dist/*.egg ; \
 	  set +x
+
+codespeed: optpython $(CODESPEED_URLSFILE)
+	@echo "" ; echo "*** Misc settings ***" ; echo ""
+	@echo "" ; echo " * Added 'gunicorn' to INSTALLED_APPS in $(CODESPEED_DIR)/settings.py"
+	@echo "" ; echo " * You may need to edit URLs in $(CODESPEED_URLSFILE)"
+	@echo "" ; echo " * Start webserver via" ;
+	@echo "     cd $(CODESPEED_DIR) ; \\"
+	@echo "     $(PYTHONBIN)/python ./manage.py run_gunicorn"
+	@echo ""
+
+$(CODESPEED_URLSFILE):
+#
+# Install codespeed
+#
+	$(APTGET) install mercurial
+	$(APTGET) install git
+	$(APTGET) install apache2
+	$(APTGET) install libapache2-mod-wsgi
+	$(PYTHONBIN)/easy_install pip
+	-$(PYTHONBIN)/pip install pysvn
+	$(PYTHONBIN)/pip install gunicorn
+	-#$(PYTHONBIN)/pip install isodate
+	-#$(PYTHONBIN)/pip install django
+	-#$(PYTHONBIN)/pip install South
+	cd $(TMP) ; rm -fr codespeed ; git clone $(CODESPEED_GITURL)
+	cd $(TMP)/codespeed ; $(PYTHONBIN)/pip install .
+	mkdir -p $(CODESPEED_DIR)
+	cp -r $(TMP)/codespeed/example/* $(CODESPEED_DIR)/
+	perl -pni -e "s/ROOT_URLCONF = 'example.urls'/ROOT_URLCONF = '$(CODESPEED_INSTANCENAME).urls'/g" $(CODESPEED_DIR)/settings.py
+	perl -pni -e "s/^INSTALLED_APPS = \(/INSTALLED_APPS = ('gunicorn',/g" $(CODESPEED_DIR)/settings.py
+	-#cp -r $(CODESPEED_DIR)/example.urls $(CODESPEED_DIR)/$(CODESPEED_INSTANCENAME).urls
+	@echo "" ; echo "*** codespeed - collectstatic ***"; echo ""
+	cd $(CODESPEED_DIR) ; $(PYTHONBIN)/python manage.py collectstatic
+	@echo "" ; echo "*** codespeed - syncdb ***"; echo ""
+	cd $(CODESPEED_DIR) ; $(PYTHONBIN)/python manage.py syncdb
+	@echo "" ; echo "*** codespeed - migrate ***"; echo ""
+	cd $(CODESPEED_DIR) ; $(PYTHONBIN)/python manage.py migrate
+	@echo "" ; echo "*** codespeed - loaddata ***"; echo ""
+	cd $(CODESPEED_DIR) ; $(PYTHONBIN)/python manage.py loaddata $(TMP)/codespeed/codespeed/fixtures/testdata.json
 
 nfsserver:
 #
