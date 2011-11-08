@@ -31,6 +31,7 @@ case "$1" in
     restart)
 	echo  "Restart TAPPER_ACTION "
 	$0 stop
+        sleep 5
 	$0 start
 	;;
     *)

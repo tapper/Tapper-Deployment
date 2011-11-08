@@ -35,6 +35,7 @@ case "$1" in
     restart)
 	echo  "Restart TAPPER_REPORTS_API "
 	$0 stop
+        sleep 5
 	$0 start
 	;;
     *)
