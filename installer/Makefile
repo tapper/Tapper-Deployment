@@ -129,7 +129,8 @@ PYTHONPREPARE = $(SCRIPTENVIRONMENT) $(STARTERKITDIR)/utils/prepare-optpython
 
 ### opentftpd
 #OPENTFTPDURL=http://downloads.sourceforge.net/project/tftp-server/tftp%20server%20single%20port/opentftpspV1.65.tar.gz
-OPENTFTPDURL=http://renormalist.net/tftp/opentftpmtV1.62.tar.gz # the last working TFTP in the world :-/
+#OPENTFTPDURL=http://renormalist.net/tftp/opentftpmtV1.62.tar.gz # the last working TFTP in the world :-/
+OPENTFTPDURL="http://downloads.sourceforge.net/project/tftp-server/tftp%20server%20multithreaded/opentftpmtV1.65.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Ftftp-server%2Ffiles%2Ftftp%2520server%2520multithreaded%2FopentftpmtV1.65.tar.gz%2Fdownload&ts=1320954206&use_mirror=superb-sea2"
 
 # Debian automatic install
 APTGETOPTIONS=-o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --yes
