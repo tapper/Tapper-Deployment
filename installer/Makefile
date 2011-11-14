@@ -358,7 +358,7 @@ endif
 # *
 # ==============================================================
 
-installerchroot: dependencies $(INSTALLERCHROOT)/etc/log4perl.cfg
+installerchroot: dependencies libdeps $(INSTALLERCHROOT)/etc/log4perl.cfg
 
 $(INSTALLERCHROOT)/etc/log4perl.cfg:
 	@echo "##################################################################"
