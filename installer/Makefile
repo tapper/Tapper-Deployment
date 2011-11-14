@@ -1272,7 +1272,7 @@ so: engage
 it:
 	@echo "Make it so!"
 
-upgrade: web cli api receiver testplan
+upgrade: web cli api receiver testplan schema-upgrade
 	@echo "Upgraded the most usual components:"
 	@echo ""
 	@echo " - web"
