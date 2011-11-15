@@ -103,6 +103,8 @@ CLIENTPKG64CHROOTPREPARE=prepare-clientpkg-in-chroot
 CLIENTPKG32FILE=$(TAPPERUTILSDIR)/opt-tapper32.tar.gz
 CLIENTPKG32CHROOT=/mnt/chroot/squeeze-tapper-clientpkg32
 CLIENTPKG32CHROOTPREPARE=prepare-clientpkg-in-chroot
+# local architecture (where Deployment is run, whatever it is, amd64, i386, arm, ...)
+CLIENTPKGLOCALFILE=$(TAPPERUTILSDIR)/opt-tapperlocal.tar.gz
 
 ### initial machine names
 TAPPER_SERVER?=tapper
@@ -203,6 +205,8 @@ help:
 	@echo "                              because it risks MCP persistence!"
 	@echo "  make schema-upgrade   -- run DB schema upgrade scripts"
 	@echo "                           => after 'make schema' with structural changes"
+	@echo "  make clientpkglocal   -- create client packages of current architecture"
+	@echo "                           => poor man's clientpkg for unknown architecture"
 	@echo ""
 	@echo "Other targets:"
 	@echo "--------------"
@@ -754,6 +758,39 @@ updateclientpkg32:
 	  tar -czf $(CLIENTPKG32FILE) opt/
 
 
+
+# ==============================================================
+# *
+# *
+# *
+# *                      local arch client pkg
+# *
+# *
+# * (to help building a clientpkg by simply using this Makefile
+# * on a dedicated build machine of a wanted architecture but
+# * without fiddling with debootstrap, chroots, or cross-compiling.
+# *
+# ==============================================================
+
+
+clientpkglocal:    clientpkglibs updateclientpkglocal
+clientpkglocal++:                updateclientpkglocal
+
+updateclientpkglocal:
+#
+# Prepare opt-tapper package from local architecture
+#
+	@echo "##############################################################"
+	@echo "# "
+	@echo "#         ,**************************."
+	@echo "# SET UP  *   CLIENT PACKAGE local   *"
+	@echo "#         '**************************'"
+	@echo "# "
+	@echo "##############################################################"
+	if [ -r $(CLIENTPKGLOCALFILE) ] ; then cp $(CLIENTPKGLOCALFILE) $(CLIENTPKGLOCALFILE)_bak_`date +%Y%m%d%H%M` ; fi ; \
+	  tar -czf $(CLIENTPKGLOCALFILE) /opt/tapper
+
+
 # ==============================================================
 # *
 # *
@@ -838,6 +875,19 @@ $(PERLBIN)/perl:
 	@echo "########## Install Perl"
 #	chmod +x $(PERLPREPARE)
 	$(PERLPREPARE)
+
+clientpkglibs:
+#
+# Install Perl libs that make the "clientpkg" locally.
+# Can be used to build a clientpkg locally without the chroots.
+#
+	$(PREPAREPERLMODULE) Tapper::Remote
+	$(PREPAREPERLMODULE) Tapper::PRC
+	$(PREPAREPERLMODULE) Tapper::Installer
+	$(PREPAREPERLMODULE) Tapper::TestSuite::AutoTest
+	$(PREPAREPERLMODULE) Tapper::TestSuite::Benchmark::Perl::Formance
+	$(PREPAREPERLMODULE) Tapper::TestSuite::Netperf
+	$(PREPAREPERLMODULE) Tapper::TestSuite::HWTrack
 
 optpython: dependencies $(PYTHONBIN)/python
 
