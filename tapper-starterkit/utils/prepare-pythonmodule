@@ -19,7 +19,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
     # git checkout
     cd /tmp/
     if [ ! -d OSRC-TestSuites ] ; then
-        git clone git://wotan/OSRC-TestSuites
+        git clone git://wotan/tapper/OSRC-TestSuites
     fi
 
     # successfully cloned? Then we are probably in OSRC

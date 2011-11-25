@@ -45,7 +45,7 @@ PYTHONPREFIX=/opt/tapper/python
 # Python test suites
 if [ "x1" == "x$TAPPERFROMGIT" ] ; then
     cd /tmp
-    if [ ! -d OSRC-TestSuites ] ; then git clone git://wotan/OSRC-TestSuites ; fi
+    if [ ! -d OSRC-TestSuites ] ; then git clone git://wotan/tapper/OSRC-TestSuites ; fi
     if [ -d OSRC-TestSuites ] ; then
         cd OSRC-TestSuites
         git pull

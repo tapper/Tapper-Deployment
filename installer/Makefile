@@ -43,7 +43,7 @@ TAPPERFROMGIT ?= 0
 PYTHONSTATICTWEAKS ?= 0
 
 GITPREFIXTAPPERLIBS ?= git://github.com/amd
-GITPREFIXTESTSUITES ?= git://wotan
+GITPREFIXTESTSUITES ?= git://wotan/tapper
 
 # use local starterkit instead of download from amd64.org
 LOCALSTARTERKIT ?= 1
@@ -902,7 +902,7 @@ temare: optpython
 #
 # Install temare - very OSRC-specific
 #
-	cd /tmp/ ; if [ ! -d OSRC-Tapper ] ; then git clone git://wotan/OSRC-Tapper ; fi
+	cd /tmp/ ; if [ ! -d OSRC-Tapper ] ; then git clone git://wotan/tapper/OSRC-Tapper ; fi
 	cd /tmp/OSRC-Tapper/src/temare ; git pull ; \
 	  echo "********************** temare (from git) **********************************" ; \
 	  rm -f dist/*.egg ; \
