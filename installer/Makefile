@@ -1021,8 +1021,10 @@ opentftpd:
 
 # OSRC specific: hardware inventory DB synced into scheduler db
 # TODO: hardwaredb changes trigger "ssh root@tapper -c make hwdbsync"
-hwdbsync:
+hwdb:
 	$(PREPAREPERLMODULE) Tapper::HardwareDB
+
+hwdbsync:
 	$(PERLBIN)/hardwaredb_transfer
 
 perlpkgs:
