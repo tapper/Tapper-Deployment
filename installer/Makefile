@@ -981,6 +981,7 @@ libdeps:
 	$(APTGET) install wget
 	$(APTGET) install rsync
 	$(APTGET) install gcc
+	$(APTGET) install g++
 	$(APTGET) install perl-modules
 	$(APTGET) install libsqlite3-dev
 	$(APTGET) install expect
