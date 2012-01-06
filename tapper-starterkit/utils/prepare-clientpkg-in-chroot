@@ -1,22 +1,5 @@
 #! /bin/bash
 
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo "********** WORKAROUND in prepare-clientpkg-in-chroot: ************"
-echo "**********   DELETE THE apt-get line once you did     ************"
-echo "**********   $ make baseimages clientpkgs             ************"
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-apt-get --yes --allow-unauthenticated install libyaml-dev
-
 # ===========================================================
 
 set -x
@@ -30,6 +13,7 @@ export PYTHONSTATICTWEAKS
 
 # Perl libs
 /tmp/tapper-starterkit/utils/prepare-perlmodule \
+ App::Bootstrap::Perl \
  Tapper::Remote \
  Tapper::PRC \
  Tapper::Installer \

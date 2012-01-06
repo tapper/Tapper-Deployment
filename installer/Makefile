@@ -881,6 +881,7 @@ clientpkglibs:
 # Install Perl libs that make the "clientpkg" locally.
 # Can be used to build a clientpkg locally without the chroots.
 #
+	$(PREPAREPERLMODULE) App::Bootstrap::Perl
 	$(PREPAREPERLMODULE) Tapper::Remote
 	$(PREPAREPERLMODULE) Tapper::PRC
 	$(PREPAREPERLMODULE) Tapper::Installer
