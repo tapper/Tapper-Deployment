@@ -1209,6 +1209,7 @@ mcp: workingdirs dependencies tapperconfig libdeps mysql optperl
 	$(PREPAREPERLMODULE) Tapper::Schema
 	$(PREPAREPERLMODULE) Tapper::Producer
 	$(PREPAREPERLMODULE) Tapper::MCP
+	cp $(STARTERKITDIR)/etc/init.d/tapper_cleanup /etc/init.d/
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_daemon /etc/init.d/
 	$(INSSERV) tapper_mcp_daemon || $(UPDATERC) tapper_mcp_daemon defaults
 	-/etc/init.d/tapper_mcp_daemon stop
