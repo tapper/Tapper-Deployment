@@ -1212,7 +1212,7 @@ mcp: workingdirs dependencies tapperconfig libdeps mysql optperl
 	cp $(STARTERKITDIR)/etc/init.d/tapper_mcp_daemon /etc/init.d/
 	$(INSSERV) tapper_mcp_daemon || $(UPDATERC) tapper_mcp_daemon defaults
 	-/etc/init.d/tapper_mcp_daemon stop
-	-ps aux | grep -v awk | grep -v grep | awk '/mcp-daemon/ {print $$2}' | xargs kill $$1
+#	-ps aux | grep -v awk | grep -v grep | awk '/mcp-daemon/ {print $$2}' | xargs kill $$1
 	/etc/init.d/tapper_mcp_daemon start
 
 mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps mysql optperl
