@@ -39,6 +39,7 @@ apt-get --yes --allow-unauthenticated install pciutils
 apt-get --yes --allow-unauthenticated install kpartx
 apt-get --yes --allow-unauthenticated install mount  # for losetup
 apt-get --yes --allow-unauthenticated install lsof
+apt-get --yes --allow-unauthenticated install bzip2
 
 # set default password
 echo "root:tapper" | chpasswd
