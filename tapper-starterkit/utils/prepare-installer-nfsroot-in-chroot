@@ -78,3 +78,13 @@ cp /tmp/tapper-starterkit/misc/MAKEDEV /dev/MAKEDEV
 chmod +x /dev/MAKEDEV
 cd /dev
 ./MAKEDEV generic
+
+# ===========================================================
+
+# we build Perl+Python to have it already available for nfsroot++ and
+# save compile time
+
+/tmp/tapper-starterkit/utils/prepare-optperl
+PYTHONSTATICTWEAKS=1 /tmp/tapper-starterkit/utils/prepare-optpython
+
+# ===========================================================

@@ -819,7 +819,7 @@ WORKDIRS := $(METAREPORTSDIR) \
              $(TAPPERUTILSDIR) \
              $(TESTPROGRAMDIR) \
              $(CONFIGSDIR) \
-			 $(USECASEDIR) \
+             $(USECASEDIR) \
              $(TFTPBOOTDIR) \
              $(SYNCDIR) \
              $(NFSROOTDIR)
