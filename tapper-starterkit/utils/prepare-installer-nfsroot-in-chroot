@@ -38,6 +38,7 @@ echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
 apt-get --yes --allow-unauthenticated install pciutils
 apt-get --yes --allow-unauthenticated install kpartx
 apt-get --yes --allow-unauthenticated install mount  # for losetup
+apt-get --yes --allow-unauthenticated install lsof
 
 # set default password
 echo "root:tapper" | chpasswd
