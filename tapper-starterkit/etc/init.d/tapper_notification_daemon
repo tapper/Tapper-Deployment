@@ -1,0 +1,42 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          TAPPER_NOTIFICATION
+# Required-Start:    $syslog $remote_fs $tapper_cleanup $ALL
+# Should-Start: $time ypbind smtp
+# Required-Stop:     $syslog $remote_fs
+# Should-Stop: $time ypbind smtp
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: TAPPER_NOTIFICATION daemon providing Tapper notification support
+# Description:       Start TAPPER_NOTIFICATION to provide Tapper notification support
+### END INIT INFO
+
+# Note: Special treatment of stop for LSB conformance
+PERL=/opt/tapper/perl/perls/current/bin/perl
+TAPPER_NOTIFICATION_BIN=/opt/tapper/perl/perls/current/bin/tapper-notification-daemon
+test -f $TAPPER_NOTIFICATION_BIN || { echo "$TAPPER_NOTIFICATION_BIN not installed";
+	if [ "$1" = "stop" ]; then exit 0;
+	else exit 5; fi; }
+
+case "$1" in
+    start)
+	echo  "Starting TAPPER_NOTIFICATION "
+	$PERL $TAPPER_NOTIFICATION_BIN start
+	;;
+    stop)
+	echo  "Shutting down TAPPER_NOTIFICATION "
+	$PERL $TAPPER_NOTIFICATION_BIN stop
+	;;
+    restart)
+	echo  "Restart TAPPER_NOTIFICATION "
+	$0 stop
+        sleep 5
+	$0 start
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+	;;
+esac
+

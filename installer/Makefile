@@ -178,6 +178,7 @@ help:
 	@echo "------------------------"
 	@echo "  make web              -- update WebGUI"
 	@echo "  make mcp              -- update MCP"
+	@echo "  make notification     -- update Notification framework"
 	@echo "  make cli              -- update CLI"
 	@echo "  make api              -- update Tapper::Reports::API"
 	@echo "  make receiver         -- update Tapper::Reports::Receiver"
@@ -1215,6 +1216,22 @@ mcp: workingdirs dependencies tapperconfig libdeps mysql optperl
 	-/etc/init.d/tapper_mcp_daemon stop
 	-ps aux | grep -v awk | grep -v grep | awk '/mcp-daemon/ {print $$2}' | xargs kill $$1
 	/etc/init.d/tapper_mcp_daemon start
+
+notification: workingdirs dependencies tapperconfig libdeps mysql optperl
+#
+# start scripts for Notification framework
+#
+	@echo "########## start scripts for Notification framework"
+	-# Proc::ProcessTable 0.45 (needed by App::Daemon) has problems using threads (undefined symbol pthread_once)
+	$(CPAN_INSTALL) D/DU/DURIST/Proc-ProcessTable-0.44.tar.gz
+	$(CPAN_INSTALL) App::Daemon
+	$(PREPAREPERLMODULE) Tapper::Schema
+	$(PREPAREPERLMODULE) Tapper::Notification
+	cp $(STARTERKITDIR)/etc/init.d/tapper_notification_daemon /etc/init.d/
+	$(INSSERV) tapper_notification_daemon || $(UPDATERC) tapper_notification_daemon defaults
+	-/etc/init.d/tapper_notification_daemon stop
+	/etc/init.d/tapper_notification_daemon start
+
 
 mcpmsgreceiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 #
