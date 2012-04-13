@@ -50,7 +50,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
 
         if [ "x$CURRENT_REV" = "x$LAST_REV" ] ; then
             echo ""
-            echo "*** $dist is up-to-date ($CURRENT_REV)"
+            echo "*** $dist is up-to-date (last-rev: $LAST_REV; current-rev:$CURRENT_REV)"
             echo ""
             break
         fi
