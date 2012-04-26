@@ -17,7 +17,6 @@ export PYTHONSTATICTWEAKS
  Tapper::Remote \
  Tapper::PRC \
  Tapper::Installer \
- Tapper::CLI \
  Tapper::TestSuite::AutoTest \
  Tapper::TestSuite::Benchmark::Perl::Formance \
  Tapper::TestSuite::Netperf \
