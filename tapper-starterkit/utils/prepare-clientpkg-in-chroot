@@ -38,6 +38,26 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
     fi
 fi
 
+# ==================== autoreport ====================
+
+# public version
+cd /tmp
+dist=Tapper-autoreport
+if [ ! -d $dist ] ; then git clone ${GITPREFIXTAPPERLIBS}/$dist ; fi
+if [ -d $dist ] ; then
+    cd $dist
+    cp tapper-autoreport /opt/tapper/bin/
+fi
+
+# OSRC, may overwrite public versions
+cd /tmp
+dist=autoreport-testscripts
+if [ ! -d $dist ] ; then git clone git://wotan/$dist ; fi
+if [ -d $dist ] ; then
+    cd $dist
+    cp tapper-autoreport autoreport-utils /opt/tapper/bin/
+fi
+
 # ===========================================================
 
 /tmp/tapper-starterkit/utils/create-symlinks
