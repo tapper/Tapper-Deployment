@@ -13,6 +13,7 @@ mkdir -p $BIN
 for f in $(find /opt/tapper/perl/perls/current/bin/ -name "tapper*") ; do
     ln -sf $f $BIN/
 done
+for f in benchmark-perlformance bootstrap-perl ; do ln -sf /opt/tapper/perl/perls/current/bin/$f $BIN/ ; done
 
 # Python
 
