@@ -1172,6 +1172,8 @@ schema-upgrade: schema cli
 	-### This has to be done manually to ensure a human thinks about it.
 
 testplan: workingdirs dependencies tapperconfig libdeps optperl
+	-# Template::Plugin::Autoformat tests fail on its own changed upper/lowercase use
+	$(CPAN_INSTALL) -f Template::Plugin::Autoformat
 	$(PREPAREPERLMODULE) Tapper::Testplan
 	-# allowed to fail to relax this OSRC specific part for others
 	-cp /data/tapper/live/testplan/utils/osrc/crontab  /etc/cron.d/tapper-testplan-osrc
