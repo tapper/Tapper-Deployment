@@ -1184,6 +1184,8 @@ api: workingdirs dependencies tapperconfig libdeps mysql optperl
 # start scripts for reports-api
 #
 	@echo "########## start scripts for reports-api"
+	-# Template::Plugin::Autoformat tests fail on its own changed upper/lowercase use
+	$(CPAN_INSTALL) -f Template::Plugin::Autoformat
 	$(PREPAREPERLMODULE) Tapper::Reports::API
 	cp $(STARTERKITDIR)/etc/init.d/tapper_reports_api_daemon /etc/init.d/
 	$(INSSERV) tapper_reports_api_daemon || $(UPDATERC) tapper_reports_api_daemon defaults
