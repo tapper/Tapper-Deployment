@@ -999,6 +999,7 @@ libdeps:
 	$(APTGET) install libxml2-dev
 	$(APTGET) install libexpat1
 	$(APTGET) install libexpat1-dev
+	$(APTGET) install libpam-dev
 
 opentftpd:
 #
