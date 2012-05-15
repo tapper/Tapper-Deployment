@@ -1029,7 +1029,7 @@ hwdb:
 	$(PREPAREPERLMODULE) Tapper::HardwareDB
 
 hwdbsync:
-	$(PERLBIN)/hardwaredb_transfer
+	$(PERLBIN)/hardwaredb-transfer
 
 perlpkgs:
 #
