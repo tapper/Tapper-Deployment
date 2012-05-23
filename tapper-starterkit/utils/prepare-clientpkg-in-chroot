@@ -13,6 +13,9 @@ export PYTHONSTATICTWEAKS
 
 # Perl libs
 /tmp/tapper-starterkit/utils/prepare-perlmodule \
+ Dist::Zilla \
+ Dist::Zilla::PluginBundle::AMD \
+ Pod::Weaver::PluginBundle::AMD \
  App::Bootstrap::Perl \
  Tapper::Remote \
  Tapper::PRC \
