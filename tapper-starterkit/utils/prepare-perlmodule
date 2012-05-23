@@ -70,12 +70,18 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
         done
 
         echo "***************** continue $module (from git) *******************"
-        $PERL Makefile.PL
-        make
-        make manifest
-        DISTDIR=$(make distdir 2>&1 | grep 'rm -rf ' | cut -d" " -f3-)
-        cd $DISTDIR
-        $CPAN -f .
+        if [ -e dist.ini ] ; then
+             git clean
+             $CPAN $(dzil listdeps | grep -v Tapper)
+             dzil test && dzil run $CPAN -f .
+        else
+            $PERL Makefile.PL
+            make
+            make manifest
+            DISTDIR=$(make distdir 2>&1 | grep 'rm -rf ' | cut -d" " -f3-)
+            cd $DISTDIR
+            $CPAN -f .
+        fi
         echo $CURRENT_REV > $DISTTRACKFILE
     done
 fi
