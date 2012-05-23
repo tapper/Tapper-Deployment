@@ -71,7 +71,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
 
         echo "***************** continue $module (from git) *******************"
         if [ -e dist.ini ] ; then
-             git clean
+             git clean -dxf
              $CPAN $(dzil listdeps | grep -v Tapper)
              dzil test && dzil run $CPAN -f .
         else
