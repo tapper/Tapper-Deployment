@@ -73,7 +73,7 @@ if [ "x1" == "x$TAPPERFROMGIT" ] ; then
         if [ -e dist.ini ] ; then
              git clean -dxf
              $CPAN $(dzil listdeps | grep -v Tapper)
-             dzil test && dzil run $CPAN -f .
+             dzil run "$CPAN -f ."
         else
             $PERL Makefile.PL
             make
