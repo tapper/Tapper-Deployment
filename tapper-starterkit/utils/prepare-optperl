@@ -37,3 +37,9 @@ echo "reload index" | $CPAN
 
 $CPAN LWP
 $CPAN Expect
+$CPAN Archive::Zip
+$CPAN CPAN
+$CPAN CPAN::SQLite
+$CPAN Dist::Zilla
+$CPAN Dist::Zilla::PluginBundle::AMD
+$CPAN Pod::Weaver::PluginBundle::AMD

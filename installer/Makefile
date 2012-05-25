@@ -39,7 +39,7 @@ DEBIANMIRROR ?= http://ftp.de.debian.org/debian/
 TAPPERFROMGIT ?= 0
 
 # build Python with some tweaks to static/shared modules
-# (urrently only used for the baseimages/clientpkgs [tapper-starterkit/utils/prepare-baseimage-in-chroot])
+# (currently only used for the baseimages/clientpkgs [tapper-starterkit/utils/prepare-baseimage-in-chroot])
 PYTHONSTATICTWEAKS ?= 0
 
 GITPREFIXTAPPERLIBS ?= git://github.com/amd
