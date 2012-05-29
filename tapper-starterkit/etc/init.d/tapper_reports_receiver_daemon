@@ -33,6 +33,7 @@ case "$1" in
 	$PERL $TAPPER_REPORTS_RECEIVER_BIN stop
 	sleep 3
 	kill $(ps auxwww|grep 'tapper-reports-receiver-daemon start'|grep -v grep|awk '{print $2}')
+	kill $(ps auxwww|grep 'tapper-reports-receiver-'|grep -v grep|awk '{print $2}')
 	;;
     restart)
 	echo "Restart TAPPER_REPORTS_RECEIVER "
