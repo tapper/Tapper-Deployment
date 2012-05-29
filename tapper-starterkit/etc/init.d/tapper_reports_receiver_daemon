@@ -23,8 +23,6 @@ test -f $TAPPER_REPORTS_RECEIVER_BIN || { echo "$TAPPER_REPORTS_RECEIVER_BIN not
 case "$1" in
     start)
 	echo -n "Starting TAPPER_REPORTS_RECEIVER "
-	export MX_DAEMON_STDOUT=/var/log/tapper_reports_receiver_daemon_stdout.log
-	export MX_DAEMON_STDERR=/var/log/tapper_reports_receiver_daemon_stderr.log
 	#export TAPPER_DEVELOPMENT=1
 	$PERL $TAPPER_REPORTS_RECEIVER_BIN start
 	;;
