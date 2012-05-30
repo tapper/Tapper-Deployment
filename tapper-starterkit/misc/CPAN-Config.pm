@@ -65,7 +65,7 @@ $CPAN::Config = {
   'trust_test_report_history' => q[0],
   'unzip' => q[],
   'urllist' => [q[ftp://ftp.fu-berlin.de/unix/languages/perl/]],
-  'use_sqlite' => q[0],
+  'use_sqlite' => q[1],
   'wget' => q[/usr/bin/wget],
   'yaml_load_code' => q[0],
 };

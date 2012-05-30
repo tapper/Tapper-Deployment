@@ -29,7 +29,7 @@ case "$1" in
 	echo -n "Shutting down TAPPER_MCP "
 	$PERL $TAPPER_MCP_BIN stop
 	sleep 3
-	kill $(ps auxwww|grep 'tapper-mcp-daemon start'|grep -v grep|awk '{print $2}')
+	kill $(ps auxwww|grep 'tapper-mcp-child'|grep -v grep|awk '{print $2}')
 	;;
     restart)
 	echo -n "Restart TAPPER_MCP "

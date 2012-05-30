@@ -39,7 +39,7 @@ DEBIANMIRROR ?= http://ftp.de.debian.org/debian/
 TAPPERFROMGIT ?= 0
 
 # build Python with some tweaks to static/shared modules
-# (urrently only used for the baseimages/clientpkgs [tapper-starterkit/utils/prepare-baseimage-in-chroot])
+# (currently only used for the baseimages/clientpkgs [tapper-starterkit/utils/prepare-baseimage-in-chroot])
 PYTHONSTATICTWEAKS ?= 0
 
 GITPREFIXTAPPERLIBS ?= git://github.com/amd
@@ -999,6 +999,7 @@ libdeps:
 	$(APTGET) install libxml2-dev
 	$(APTGET) install libexpat1
 	$(APTGET) install libexpat1-dev
+	$(APTGET) install libpam-dev
 
 opentftpd:
 #
@@ -1028,7 +1029,7 @@ hwdb:
 	$(PREPAREPERLMODULE) Tapper::HardwareDB
 
 hwdbsync:
-	$(PERLBIN)/hardwaredb_transfer
+	$(PERLBIN)/hardwaredb-transfer
 
 perlpkgs:
 #
@@ -1172,6 +1173,8 @@ schema-upgrade: schema cli
 	-### This has to be done manually to ensure a human thinks about it.
 
 testplan: workingdirs dependencies tapperconfig libdeps optperl
+	-# Template::Plugin::Autoformat tests fail on its own changed upper/lowercase use
+	$(CPAN_INSTALL) -f Template::Plugin::Autoformat
 	$(PREPAREPERLMODULE) Tapper::Testplan
 	-# allowed to fail to relax this OSRC specific part for others
 	-cp /data/tapper/live/testplan/utils/osrc/crontab  /etc/cron.d/tapper-testplan-osrc
@@ -1182,6 +1185,8 @@ api: workingdirs dependencies tapperconfig libdeps mysql optperl
 # start scripts for reports-api
 #
 	@echo "########## start scripts for reports-api"
+	-# Template::Plugin::Autoformat tests fail on its own changed upper/lowercase use
+	$(CPAN_INSTALL) -f Template::Plugin::Autoformat
 	$(PREPAREPERLMODULE) Tapper::Reports::API
 	cp $(STARTERKITDIR)/etc/init.d/tapper_reports_api_daemon /etc/init.d/
 	$(INSSERV) tapper_reports_api_daemon || $(UPDATERC) tapper_reports_api_daemon defaults

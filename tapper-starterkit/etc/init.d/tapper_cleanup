@@ -43,7 +43,7 @@ SCRIPTNAME=/etc/init.d/tapper_cleanup
 #
 do_start()
 {
-    if ps auxwww|grep -q tapper-mcp-child ; then
+    if ps auxwww|grep -v grep|grep -q tapper-mcp-child ; then
         echo "MCP must not be running while cleanup."
         echo "Stop it first with"
         echo "   /etc/init.d/tapper_mcp_daemon stop"
