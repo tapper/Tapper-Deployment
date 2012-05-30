@@ -926,10 +926,10 @@ $(CODESPEED_URLSFILE):
 #
 # Install codespeed
 #
-	$(APTGET) install mercurial
-	$(APTGET) install git
-	$(APTGET) install apache2
-	$(APTGET) install libapache2-mod-wsgi
+	$(APTGET) install mercurial \
+                          git \
+                          apache2 \
+                          libapache2-mod-wsgi
 	$(PYTHONBIN)/easy_install pip
 	-$(PYTHONBIN)/pip install pysvn
 	$(PYTHONBIN)/pip install gunicorn
@@ -969,8 +969,8 @@ mysql:
 	$(APTGET) install mysql-server
 
 apache2:
-	$(APTGET) install apache2
-	$(APTGET) install libapache2-mod-fcgid
+	$(APTGET) install apache2 \
+                          libapache2-mod-fcgid
 
 libdeps:
 #
@@ -978,28 +978,29 @@ libdeps:
 #
 	@echo "########## install some build dependencies"
 	$(APTGET) update
-	$(APTGET) install debootstrap
-	$(APTGET) install patch
-	$(APTGET) install makepatch
-	$(APTGET) install curl
-	$(APTGET) install wget
-	$(APTGET) install rsync
-	$(APTGET) install gcc
-	$(APTGET) install g++
-	$(APTGET) install perl-modules
-	$(APTGET) install libsqlite3-dev
-	$(APTGET) install expect
-	$(APTGET) install expect-dev
-	$(APTGET) install libssl-dev
+	$(APTGET) install \
+                  debootstrap \
+                  patch \
+                  makepatch \
+                  curl \
+                  wget \
+                  rsync \
+                  gcc \
+                  g++ \
+                  perl-modules \
+                  libsqlite3-dev \
+                  expect \
+                  expect-dev \
+                  libssl-dev \
+                  libsqlite3-0 \
+                  sqlite3 \
+                  libxml2 \
+                  libxml2-dev \
+                  libexpat1 \
+                  libexpat1-dev \
+                  libpam-dev
 	-$(APTGET) install libmysqlclient-dev
 	-$(APTGET) install libmysqlclient15-dev
-	$(APTGET) install libsqlite3-0
-	$(APTGET) install sqlite3
-	$(APTGET) install libxml2
-	$(APTGET) install libxml2-dev
-	$(APTGET) install libexpat1
-	$(APTGET) install libexpat1-dev
-	$(APTGET) install libpam-dev
 
 opentftpd:
 #
