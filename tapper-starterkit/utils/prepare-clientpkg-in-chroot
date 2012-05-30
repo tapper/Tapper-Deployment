@@ -13,6 +13,7 @@ export PYTHONSTATICTWEAKS
 
 # Perl libs
 /tmp/tapper-starterkit/utils/prepare-perlmodule \
+ WWW::Mechanize \
  App::Bootstrap::Perl \
  Tapper::Remote \
  Tapper::PRC \
