@@ -21,6 +21,7 @@ export PYTHONSTATICTWEAKS
  Tapper::Installer \
  Tapper::TestSuite::AutoTest \
  Tapper::TestSuite::Benchmark::Perl::Formance \
+ Tapper::TestSuite::Benchmark::S3 \
  Tapper::TestSuite::Netperf \
  Tapper::TestSuite::HWTrack
 
