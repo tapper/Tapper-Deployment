@@ -1261,6 +1261,7 @@ web: workingdirs dependencies tapperconfig libdeps mysql apache2 optperl testpla
 	cp $(STARTERKITDIR)/usecases/kernel_build.mpc $(USECASEDIR)/
 	cp $(STARTERKITDIR)/usecases/tests.yml   $(USECASEDIR)/
 	cp $(STARTERKITDIR)/etc/apache2/conf.d/tapper_reports_web.conf /etc/apache2/conf.d/
+	mkdir -p $$(dirname $$($(PERLBIN)/perldoc -l Tapper::Reports::Web))/Web/root/tapper/static/
 	ln -sf $(METAREPORTSDIR) $$(dirname $$($(PERLBIN)/perldoc -l Tapper::Reports::Web))/Web/root/tapper/static/
 	/etc/init.d/apache2 restart
 
