@@ -23,7 +23,7 @@ chmod +x perlbrew
 /opt/tapper/perl/bin/perlbrew init
 echo "if [ -e /opt/tapper/perl/etc/bashrc ] ; then . /opt/tapper/perl/etc/bashrc ; fi" >> $HOME/.bashrc
 . /opt/tapper/perl/etc/bashrc
-perlbrew install -j ${CPUCOUNT} perl-${PERLVERSION}
+perlbrew install -j ${CPUCOUNT} perl-${PERLVERSION} -D use64bitint
 perlbrew switch perl-${PERLVERSION}
 cd /opt/tapper/perl/perls ; ln -sf perl-${PERLVERSION} current
 
