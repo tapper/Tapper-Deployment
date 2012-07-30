@@ -208,6 +208,7 @@ help:
 	@echo "                           => after 'make schema' with structural changes"
 	@echo "  make clientpkglocal   -- create client packages of current architecture"
 	@echo "                           => poor man's clientpkg for unknown architecture"
+	@echo "  make perlmodule M=xyz -- install Perl module xyz locally"
 	@echo ""
 	@echo "Other targets:"
 	@echo "--------------"
@@ -1264,6 +1265,10 @@ web: workingdirs dependencies tapperconfig libdeps mysql apache2 optperl testpla
 	mkdir -p $$(dirname $$($(PERLBIN)/perldoc -l Tapper::Reports::Web))/Web/root/tapper/static/
 	ln -sf $(METAREPORTSDIR) $$(dirname $$($(PERLBIN)/perldoc -l Tapper::Reports::Web))/Web/root/tapper/static/
 	/etc/init.d/apache2 restart
+
+# allow 'make perlmodule M=Tapper::Cmd'
+perlmodule:
+	$(PREPAREPERLMODULE) $(M)
 
 # We get mental on this topic!
 #
