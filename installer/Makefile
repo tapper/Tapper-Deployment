@@ -38,6 +38,9 @@ DEBIANMIRROR ?= http://ftp.de.debian.org/debian/
 # install Tapper libs from Git repositories
 TAPPERFROMGIT ?= 0
 
+# which database to use ("mysql", "postgresql")
+TAPPERDBMS ?= mysql
+
 # build Python with some tweaks to static/shared modules
 # (currently only used for the baseimages/clientpkgs [tapper-starterkit/utils/prepare-baseimage-in-chroot])
 PYTHONSTATICTWEAKS ?= 0
@@ -278,8 +281,14 @@ cleanlocal:
 	-$(APTGET) remove --purge expect-dev
 	-$(APTGET) remove --purge expect
 	-$(APTGET) remove --purge libssl-dev
-	-$(APTGET) remove --purge mysql-server
+	-$(APTGET) remove         mysql-server
 	-$(APTGET) remove --purge libmysqlclient-dev
+	-$(APTGET) remove --purge libmysqlclient15-dev
+ ifeq ($(TAPPERDBMS),postgresql)
+	-$(APTGET) remove         postgresql
+	-$(APTGET) remove --purge postgresql-client
+	-$(APTGET) remove --purge libpq-dev
+ endif
 	-$(APTGET) remove --purge libsqlite3-0
 	-$(APTGET) remove --purge sqlite3
 	-$(APTGET) remove --purge libxml2-dev
@@ -317,7 +326,13 @@ cleanoptpython:
 	-rm -fr $(PYTHONDIR)
 
 cleandb:
+ ifeq ($(TAPPERDBMS),mysql)
 	-echo "drop database testrundb; drop database reportsdb; drop user tapper;" | mysql -uroot -p$${MYSQL_ROOT_PW}
+ else
+  ifeq ($(TAPPERDBMS),postgresql)
+	-echo "drop database testrundb; drop database reportsdb; drop user tapper;" | sudo -u postgres psql
+  endif
+ endif
 
 mrproper: clean localclean localcleandb nfsrootclean
 	-rm -fr $(CLIENTPKG64FILE)
@@ -969,6 +984,9 @@ nfsserver:
 mysql:
 	$(APTGET) install mysql-server
 
+postgresql:
+	$(APTGET) install postgresql
+
 apache2:
 	$(APTGET) install apache2 \
                           libapache2-mod-fcgid
@@ -1002,7 +1020,9 @@ libdeps:
                   libpam-dev
 	-$(APTGET) install libmysqlclient-dev
 	-$(APTGET) install libmysqlclient15-dev
-
+ ifeq ($(TAPPERDBMS),postgresql)
+	-$(APTGET) install libpq-dev
+ endif
 opentftpd:
 #
 # Prepare CPAN libs
@@ -1050,10 +1070,12 @@ perlpkgs:
 	-# non problematic rest
 	$(CPAN_INSTALL) DBI
 	$(CPAN_INSTALL) DBD::mysql
+	$(CPAN_INSTALL) DBD::Pg
 	$(CPAN_INSTALL) DBD::SQLite
 	$(CPAN_INSTALL) Module::Install::Catalyst
 
-databases:
+databases: libdeps
+ ifeq ($(TAPPERDBMS),mysql)
 #
 # Prepare mysql-server
 #
@@ -1068,8 +1090,26 @@ databases:
 	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db TestrunDB
 	@echo "(Newqueue fails if already exists. Ignore.)"
 	-$(PERL) $(PERLBIN)/tapper-testrun newqueue --name AdHoc --prio 1000
+ else
+  ifeq ($(TAPPERDBMS),postgresql)
+#
+# Prepare postgresql
+#
+	@echo "########## Prepare postgresql"
+	-echo "create user tapper with password 'tapper' createdb createuser" | sudo -u postgres psql
+	-echo "create database reportsdb owner=tapper"                        | sudo -u postgres psql
+	-echo "create database testrundb owner=tapper"                        | sudo -u postgres psql
+	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for ReportsDB.\n" unless (Tapper::Config->subconfig->{database}{ReportsDB}{dsn} =~ m/dbi:Pg/)'
+	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for TestrunDB.\n" unless (Tapper::Config->subconfig->{database}{TestrunDB}{dsn} =~ m/dbi:Pg/)'
+	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db ReportsDB
+	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db TestrunDB
+	@echo "(Newqueue fails if already exists. Ignore.)"
+	-$(PERL) $(PERLBIN)/tapper-testrun newqueue --name AdHoc --prio 1000
+  endif
+ endif
 
 examplemachines:
+ ifeq ($(TAPPERDBMS),mysql)
 #
 # Add known test machines
 #
@@ -1082,32 +1122,77 @@ examplemachines:
 #
 	@echo "########## Add machine features"
 # machine1
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),     'mem',  4096);" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),   'cores',     4);" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),  'vendor', 'AMD');" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'), 'has_ecc',     1);" | mysql testrundb -utapper -ptapper
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),     'mem',  4096);" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),   'cores',     4);" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),  'vendor', 'AMD');" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'), 'has_ecc',     1);" | mysql testrundb -utapper -ptapper -d testrundb
 # machine2
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),     'mem',  2048);" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),   'cores',     2);" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),  'vendor', 'AMD');" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'), 'has_ecc',     0);" | mysql testrundb -utapper -ptapper
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),     'mem',  2048);" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),   'cores',     2);" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),  'vendor', 'AMD');" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'), 'has_ecc',     0);" | mysql testrundb -utapper -ptapper -d testrundb
 # machine3
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),     'mem',  2048);" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),   'cores',     2);" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),  'vendor', 'AMD');" | mysql testrundb -utapper -ptapper
-	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'), 'has_ecc',     0);" | mysql testrundb -utapper -ptapper
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),     'mem',  2048);" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),   'cores',     2);" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),  'vendor', 'AMD');" | mysql testrundb -utapper -ptapper -d testrundb
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'), 'has_ecc',     0);" | mysql testrundb -utapper -ptapper -d testrundb
+ else
+  ifeq ($(TAPPERDBMS),postgresql)
+#
+# Add known test machines
+#
+	@echo "########## Add known test machines"
+	-$(PERL) $(PERLBIN)/tapper-testrun newhost --name $(TESTMACHINE1) --active
+	-$(PERL) $(PERLBIN)/tapper-testrun newhost --name $(TESTMACHINE2) --active
+	-$(PERL) $(PERLBIN)/tapper-testrun newhost --name $(TESTMACHINE3) --active
+#
+# Add machine features (no public frontend tool available)
+#
+	@echo "########## Add machine features"
+# machine1
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),     'mem',  4096);" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),   'cores',     4);" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'),  'vendor', 'AMD');" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE1)'), 'has_ecc',     1);" | sudo -u postgres psql
+# machine2
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),     'mem',  2048);" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),   'cores',     2);" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'),  'vendor', 'AMD');" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE2)'), 'has_ecc',     0);" | sudo -u postgres psql
+# machine3
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),     'mem',  2048);" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),   'cores',     2);" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'),  'vendor', 'AMD');" | sudo -u postgres psql
+	-echo "insert into host_feature(host_id, entry, value)  values ((select id from host where name = '$(TESTMACHINE3)'), 'has_ecc',     0);" | sudo -u postgres psql
+  endif
+ endif
 
 initialdata:
+ ifeq ($(TAPPERDBMS),mysql)
 #
 # Add some initial data to have a better looking webgui
 #
 	@echo "########## Add machine features"
-	-echo "insert into user (name, login)  values ('Tapper Default User', 'tapper');" | mysql testrundb -utapper -ptapper
-	-echo "insert into user (name, login)  values ('A Typical Tapper User', 'root');" | mysql testrundb -utapper -ptapper
+	-echo "insert into owner (name, login)  values ('Tapper Default User', 'tapper');" | mysql testrundb -utapper -ptapper
+	-echo "insert into owner (name, login)  values ('A Typical Tapper User', 'root');" | mysql testrundb -utapper -ptapper
 	-echo "insert into topic (name, description)  values ('Misc', 'What does not fit into other topics');" | mysql testrundb -utapper -ptapper
 	-echo "insert into topic (name, description)  values ('Software', 'Non-kernel software, like libraries, programs');" | mysql testrundb -utapper -ptapper
 	-echo "insert into topic (name, description)  values ('Benchmark', 'Collection of values');" | mysql testrundb -utapper -ptapper
 	-echo "insert into topic (name, description)  values ('Distribution', 'OS or Compiler distribution');" | mysql testrundb -utapper -ptapper
+ else
+  ifeq ($(TAPPERDBMS),postgresql)
+#
+# Add some initial data to have a better looking webgui
+#
+	@echo "########## Add machine features"
+	-echo "insert into owner (name, login)  values ('Tapper Default User', 'tapper');" | sudo -u postgres psql -d testrundb
+	-echo "insert into owner (name, login)  values ('A Typical Tapper User', 'root');" | sudo -u postgres psql -d testrundb
+	-echo "insert into topic (name, description)  values ('Misc', 'What does not fit into other topics');" | sudo -u postgres psql -d testrundb
+	-echo "insert into topic (name, description)  values ('Software', 'Non-kernel software, like libraries, programs');" | sudo -u postgres psql -d testrundb
+	-echo "insert into topic (name, description)  values ('Benchmark', 'Collection of values');" | sudo -u postgres psql -d testrundb
+	-echo "insert into topic (name, description)  values ('Distribution', 'OS or Compiler distribution');" | sudo -u postgres psql -d testrundb
+  endif
+ endif
 
 tapperconfig: log4perlconfig /etc/tapper.cfg
 
