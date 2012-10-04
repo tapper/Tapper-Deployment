@@ -174,6 +174,32 @@ CPUCOUNT = `cat /proc/cpuinfo | grep vendor_id|wc -l`
 
 CPAN_INSTALL = PERL_AUTOINSTALL="--defaultdeps" TEST_JOBS=$(CPUCOUNT) $(CPAN)
 
+# ===== database migration configuration =====
+
+### MySQL
+# reportsdb
+REPORTSDB_MYSQL_DSN    = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{ReportsDB}{dsn}')
+REPORTSDB_MYSQL_DBNAME = $(shell echo "$(REPORTSDB_MYSQL_DSN)" | perl -pne 's/^.*dbname=(\w+).*$$/$$1/')
+REPORTSDB_MYSQL_USER   = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{ReportsDB}{username}')
+REPORTSDB_MYSQL_PW     = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{ReportsDB}{password}')
+# testrundb
+TESTRUNDB_MYSQL_DSN    = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{TestrunDB}{dsn}')
+TESTRUNDB_MYSQL_DBNAME = $(shell echo "$(TESTRUNDB_MYSQL_DSN)" | perl -pne 's/^.*dbname=(\w+).*$$/$$1/')
+TESTRUNDB_MYSQL_USER   = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{TestrunDB}{username}')
+TESTRUNDB_MYSQL_PW     = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{TestrunDB}{password}')
+
+### PostgreSQL
+# reportsdb
+REPORTSDB_PG_DSN       = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{postgresql}{ReportsDB}{dsn}')
+REPORTSDB_PG_DBNAME    = $(shell echo "$(REPORTSDB_PG_DSN)" | perl -pne 's/^.*dbname=(\w+).*$$/$$1/')
+REPORTSDB_PG_USER      = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{postgresql}{ReportsDB}{username}')
+REPORTSDB_PG_PW        = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{postgresql}{ReportsDB}{password}')
+# testrundb
+TESTRUNDB_PG_DSN       = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{postgresql}{TestrunDB}{dsn}')
+TESTRUNDB_PG_DBNAME    = $(shell echo "$(TESTRUNDB_PG_DSN)" | perl -pne 's/^.*dbname=(\w+).*$$/$$1/')
+TESTRUNDB_PG_USER      = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{postgresql}{TestrunDB}{username}')
+TESTRUNDB_PG_PW        = $(shell $(PERL) -MTapper::Config -e 'print Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{postgresql}{TestrunDB}{password}')
+
 # default target
 help:
 	@echo ""
@@ -326,11 +352,26 @@ cleanoptpython:
 	-rm -fr $(PYTHONDIR)
 
 cleandb:
+	@echo "########## Clean database"
+	@echo ""
+	@echo ""
+	@echo "*********************************"
+	@echo "READ CAREFULLY OR LOSE YOUR DATA!"
+	@echo "*********************************"
+	@echo ""
+	@echo ""
+	@echo "Drop your databases."
  ifeq ($(TAPPERDBMS),mysql)
-	-echo "drop database testrundb; drop database reportsdb; drop user tapper;" | mysql -uroot -p$${MYSQL_ROOT_PW}
+	@echo "ReportsDB: $(REPORTSDB_MYSQL_DSN)."
+	@echo "TestrunDB: $(TESTRUNDB_MYSQL_DSN)."
+	@echo -n "Are you sure (yes/NO)? " ; read ANSWER ; echo $$ANSWER | grep 'yes'
+	echo "drop database testrundb; drop database reportsdb; drop user tapper;" | mysql -uroot -p$${MYSQL_ROOT_PW}
  else
   ifeq ($(TAPPERDBMS),postgresql)
-	-echo "drop database testrundb; drop database reportsdb; drop user tapper;" | sudo -u postgres psql
+	@echo "ReportsDB: $(REPORTSDB_PG)."
+	@echo "TestrunDB: $(TESTRUNDB_PG)."
+	@echo -n "Are you sure (yes/NO)? " ; read ANSWER ; echo $$ANSWER | grep 'yes'
+	echo "drop database testrundb; drop database reportsdb; drop user tapper;" | sudo -u postgres psql
   endif
  endif
 
@@ -986,6 +1027,8 @@ mysql:
 
 postgresql:
 	$(APTGET) install postgresql
+	$(APTGET) install postgresql-client
+	$(PREPAREPERLMODULE) DBD::Pg
 
 apache2:
 	$(APTGET) install apache2 \
@@ -1074,39 +1117,129 @@ perlpkgs:
 	$(CPAN_INSTALL) DBD::SQLite
 	$(CPAN_INSTALL) Module::Install::Catalyst
 
-databases: libdeps
+createdatabases: libdeps $(TAPPERDBMS)
+	@echo ""
+	@echo ""
+	@echo "****************"
+	@echo "Create databases"
+	@echo "****************"
+	@echo ""
+	@echo ""
  ifeq ($(TAPPERDBMS),mysql)
 #
 # Prepare mysql-server
 #
-	@echo "########## Prepare mysql-server"
-	-echo "create user tapper identified by 'tapper'; \
-               create database reportsdb; \
-               grant all on reportsdb.* to tapper@'%'; \
-               create database testrundb;\
-               grant all on testrundb.* to tapper@'%';" | \
-	mysql -uroot -p$${MYSQL_ROOT_PW}
-	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db ReportsDB
-	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db TestrunDB
-	@echo "(Newqueue fails if already exists. Ignore.)"
-	-$(PERL) $(PERLBIN)/tapper-testrun newqueue --name AdHoc --prio 1000
+	@echo "Creating databases in MySQL."
+	@echo " - $(REPORTSDB_MYSQL_DBNAME): $(REPORTSDB_PG_DSN)."
+	@echo " - $(TESTRUNDB_MYSQL_DBNAME): $(TESTRUNDB_PG_DSN)."
+	-echo "create user tapper identified by 'tapper'" | mysql -uroot -p$${MYSQL_ROOT_PW}
+	-echo "create database reportsdb"                 | mysql -uroot -p$${MYSQL_ROOT_PW}
+	-echo "grant all on reportsdb.* to tapper@'%'"    | mysql -uroot -p$${MYSQL_ROOT_PW}
+	-echo "create database testrundb"                 | mysql -uroot -p$${MYSQL_ROOT_PW}
+	-echo "grant all on testrundb.* to tapper@'%'"    | mysql -uroot -p$${MYSQL_ROOT_PW}
  else
   ifeq ($(TAPPERDBMS),postgresql)
 #
 # Prepare postgresql
 #
-	@echo "########## Prepare postgresql"
-	-echo "create user tapper with password 'tapper' createdb createuser" | sudo -u postgres psql
-	-echo "create database reportsdb owner=tapper"                        | sudo -u postgres psql
-	-echo "create database testrundb owner=tapper"                        | sudo -u postgres psql
 	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for ReportsDB.\n" unless (Tapper::Config->subconfig->{database}{ReportsDB}{dsn} =~ m/dbi:Pg/)'
 	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for TestrunDB.\n" unless (Tapper::Config->subconfig->{database}{TestrunDB}{dsn} =~ m/dbi:Pg/)'
-	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db ReportsDB
-	-yes | $(PERL) $(PERLBIN)/tapper-db-deploy init --db TestrunDB
-	@echo "(Newqueue fails if already exists. Ignore.)"
-	-$(PERL) $(PERLBIN)/tapper-testrun newqueue --name AdHoc --prio 1000
+	@echo "Creating databases in PostgreSQL."
+	@echo " - $(REPORTSDB_PG_DBNAME): $(REPORTSDB_PG_DSN)."
+	@echo " - $(TESTRUNDB_PG_DBNAME): $(TESTRUNDB_PG_DSN)."
+	-echo "CREATE USER tapper WITH PASSWORD '$(TESTRUNDB_PG_PW)'" | sudo -u postgres psql 2> /dev/null
+	-echo "CREATE DATABASE reportsdb"                             | sudo -u postgres psql 2> /dev/null
+	-echo "CREATE DATABASE testrundb"                             | sudo -u postgres psql 2> /dev/null
+	-echo "GRANT ALL PRIVILEGES ON DATABASE reportsdb to tapper"  | sudo -u postgres psql 2> /dev/null
+	-echo "GRANT ALL PRIVILEGES ON DATABASE testrundb to tapper"  | sudo -u postgres psql 2> /dev/null
+# check PostgreSQL authentication config
+	@echo ""
+	@echo "**************************************"
+	@echo "Check PostgreSQL authentication config"
+	@echo "**************************************"
+	@echo ""
+	@echo "Check that a non-PostgreSQL user can connect with right credentials."
+	@echo "(eg. the Apache user that runs the WebGUI)"
+	@echo ""
+	@echo "If this fails, add something like this to $(shell ls -1 /etc/postgresql/*/main/pg_hba.conf):"
+	@echo ""
+	@echo "  local      all      all      trust"
+	@echo ""
+	@echo "and do"
+	@echo ""
+	@echo "  /etc/init.d/postgresql restart"
+	@echo ""
+	@echo -n "Test connection to '$(TESTRUNDB_PG_DBNAME)' ... " ; if echo '\q' | sudo -u www-data psql -U $(TESTRUNDB_PG_USER) -d $(TESTRUNDB_PG_DBNAME) > /dev/null 2>&1 ; then echo "ok" ; else echo "fail" ; exit 1 ; fi
+	@echo -n "Test connection to '$(REPORTSDB_PG_DBNAME)' ... " ; if echo '\q' | sudo -u www-data psql -U $(REPORTSDB_PG_USER) -d $(REPORTSDB_PG_DBNAME) > /dev/null 2>&1 ; then echo "ok" ; else echo "fail" ; exit 1 ; fi
+	@echo ""
   endif
  endif
+
+databases: createdatabases
+# Plausi checks
+ ifeq ($(TAPPERDBMS),mysql)
+	@$(PERL) -MTapper::Config -E 'die "error: No MySQL connection configured for ReportsDB.\n" unless (Tapper::Config->subconfig->{database}{ReportsDB}{dsn} =~ m/dbi:mysql/)'
+	@$(PERL) -MTapper::Config -E 'die "error: No MySQL connection configured for TestrunDB.\n" unless (Tapper::Config->subconfig->{database}{TestrunDB}{dsn} =~ m/dbi:mysql/)'
+ else
+  ifeq ($(TAPPERDBMS),postgresql)
+	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for ReportsDB.\n" unless (Tapper::Config->subconfig->{database}{ReportsDB}{dsn} =~ m/dbi:Pg/)'
+	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for TestrunDB.\n" unless (Tapper::Config->subconfig->{database}{TestrunDB}{dsn} =~ m/dbi:Pg/)'
+  endif
+ endif
+# Deploy
+	-$(PERL) $(PERLBIN)/tapper-db-deploy init --db ReportsDB
+	-$(PERL) $(PERLBIN)/tapper-db-deploy init --db TestrunDB
+
+migrate-from-mysql-to-postgres: libdeps createdatabases
+	@$(PERL) -MTapper::Config -E 'die "error: No export TAPPERDBMS=postgresql set.\n" unless $$ENV{TAPPERDBMS} eq "postgresql"'
+	$(MAKE) perlmodule M=App::DBICx::Backend::Move
+# plausi checks
+	@echo ""
+	@echo "*****************************"
+	@echo "Check Tapper db configuration"
+	@echo "*****************************"
+	@echo ""
+	@echo "Check for dual-db config in /etc/tapper.cfg like this:"
+	@echo "database:"
+	@echo "  by_TAPPERDBMS:"
+	@echo "    mysql:"
+	@echo "      TestrunDB:"
+	@echo "        dsn:        dbi:mysql:dbname=testrundb;mysql_use_result=1"
+	@echo "        username:   tapper"
+	@echo "        password:   tapper"
+	@echo "      ReportsDB:"
+	@echo "        dsn:        dbi:mysql:dbname=reportsdb;mysql_use_result=1"
+	@echo "        username:   tapper"
+	@echo "        password:   tapper"
+	@echo "    postgresql:"
+	@echo "      TestrunDB:"
+	@echo "        dsn:        dbi:Pg:dbname=testrundb"
+	@echo "        username:   tapper"
+	@echo "        password:   tapper"
+	@echo "      ReportsDB:"
+	@echo "        dsn:        dbi:Pg:dbname=reportsdb"
+	@echo "        username:   tapper"
+	@echo "        password:   tapper"
+	@$(PERL) -MTapper::Config -E 'die "error: No MySQL connection configured for ReportsDB.\n" unless (Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{ReportsDB}{dsn} =~ m/dbi:mysql/)'
+	@$(PERL) -MTapper::Config -E 'die "error: No MySQL connection configured for TestrunDB.\n" unless (Tapper::Config->subconfig->{database}{by_TAPPERDBMS}{mysql}{TestrunDB}{dsn} =~ m/dbi:mysql/)'
+	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for ReportsDB.\n" unless (Tapper::Config->subconfig->{database}{ReportsDB}{dsn} =~ m/dbi:Pg/)'
+	@$(PERL) -MTapper::Config -E 'die "error: No PostgreSQL connection configured for TestrunDB.\n" unless (Tapper::Config->subconfig->{database}{TestrunDB}{dsn} =~ m/dbi:Pg/)'
+	@echo ""
+	@echo ""
+	@echo "Tapper config ok."
+	@echo ""
+	@echo "*****************************************"
+	@echo "Run DB migration from MySQL to PostgreSQL"
+	@echo "*****************************************"
+	@echo ""
+	@echo -n "Are you sure (yes/NO)? " ; read ANSWER ; echo $$ANSWER | grep 'yes'
+	$(PERL) $(PERLBIN)/dbicx-backend-move --schema 'Tapper::Schema::ReportsDB' -v --from_dsn '$(REPORTSDB_MYSQL_DSN)' --from_user '$(REPORTSDB_MYSQL_USER)' --from_pass '$(REPORTSDB_MYSQL_PW)' \
+	                                                                              --to_dsn   '$(REPORTSDB_PG_DSN)'    --to_user   '$(REPORTSDB_PG_USER)'    --to_pass   '$(REPORTSDB_PG_PW)'
+	$(PERL) $(PERLBIN)/dbicx-backend-move --schema 'Tapper::Schema::TestrunDB' -v --from_dsn '$(TESTRUNDB_MYSQL_DSN)' --from_user '$(TESTRUNDB_MYSQL_USER)' --from_pass '$(TESTRUNDB_MYSQL_PW)' \
+	                                                                              --to_dsn   '$(TESTRUNDB_PG_DSN)'    --to_user   '$(TESTRUNDB_PG_USER)'    --to_pass   '$(TESTRUNDB_PG_PW)'
+	@echo ""
+	@echo ""
+	echo "Migration to PostgreSQL done."
 
 examplemachines:
  ifeq ($(TAPPERDBMS),mysql)
