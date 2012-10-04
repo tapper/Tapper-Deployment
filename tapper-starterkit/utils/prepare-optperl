@@ -19,7 +19,7 @@ export PERLBREW_ROOT=/opt/tapper/perl
 mkdir -p $PERLBREW_ROOT
 curl -LO http://xrl.us/perlbrew
 chmod +x perlbrew
-./perlbrew install
+./perlbrew self-install
 /opt/tapper/perl/bin/perlbrew init
 echo "if [ -e /opt/tapper/perl/etc/bashrc ] ; then . /opt/tapper/perl/etc/bashrc ; fi" >> $HOME/.bashrc
 . /opt/tapper/perl/etc/bashrc
