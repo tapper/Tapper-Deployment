@@ -1231,8 +1231,11 @@ receiver: workingdirs dependencies tapperconfig libdeps mysql optperl
 	/etc/init.d/tapper_reports_receiver_daemon start
 	sleep 2
 
-cli: workingdirs dependencies tapperconfig libdeps optperl
+cli: workingdirs dependencies tapperconfig libdeps optperl cmd
 	$(PREPAREPERLMODULE) Tapper::CLI
+
+cmd: workingdirs dependencies tapperconfig libdeps optperl
+	$(PREPAREPERLMODULE) Tapper::Cmd
 
 # OSRC specific - do not expect that on CPAN
 hardwaredb: workingdirs dependencies tapperconfig libdeps optperl
