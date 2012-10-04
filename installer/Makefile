@@ -1356,7 +1356,7 @@ web: workingdirs dependencies tapperconfig libdeps mysql apache2 optperl testpla
 
 # allow 'make perlmodule M=Tapper::Cmd'
 perlmodule:
-	$(PREPAREPERLMODULE) $(M)
+	-$(PREPAREPERLMODULE) $(M)
 
 # We get mental on this topic!
 #
