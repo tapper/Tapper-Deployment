@@ -20,6 +20,7 @@ mkdir -p $PERLBREW_ROOT
 curl -LO http://xrl.us/perlbrew
 chmod +x perlbrew
 ./perlbrew self-install
+/opt/tapper/perl/bin/perlbrew install-patchperl
 /opt/tapper/perl/bin/perlbrew init
 echo "if [ -e /opt/tapper/perl/etc/bashrc ] ; then . /opt/tapper/perl/etc/bashrc ; fi" >> $HOME/.bashrc
 . /opt/tapper/perl/etc/bashrc
@@ -42,6 +43,10 @@ $CPAN CPAN
 $CPAN CPAN::SQLite
 $CPAN YAML
 $CPAN Moose
+
+$CPAN -f -i IPC::System::Simple # fails due to just slightly different output
+$CPAN RSRCHBOY/Dist-Zilla-PluginBundle-Git-CheckFor-0.005.tar.gz
+
 $CPAN Dist::Zilla
 $CPAN Dist::Zilla::PluginBundle::AMD
 $CPAN Pod::Weaver::PluginBundle::AMD
