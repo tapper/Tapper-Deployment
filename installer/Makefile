@@ -348,6 +348,8 @@ cleanbaseimage64file:
 cleanbaseimage32file:
 	-rm -f $(BASEIMAGE32FILE)
 
+cleanbaseimagefiles: cleanbaseimage64file cleanbaseimage32file
+
 cleanstarterkit:
 	-rm -f $(STARTERKITDIR)/etc/log4perl.cfg
 
