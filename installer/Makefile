@@ -277,6 +277,8 @@ clean:
 	-rm -fr $(CLEANFILES)
 
 cleanchrootnfs:
+	@echo "Clean installer NFS chroot."
+	@echo -n "Are you sure (yes/NO)? " ; read ANSWER ; echo $$ANSWER | grep 'yes'
 	-umount $(INSTALLERCHROOT)/sys
 	-umount $(INSTALLERCHROOT)/proc
 	-umount $(INSTALLERCHROOT)/dev/pts
