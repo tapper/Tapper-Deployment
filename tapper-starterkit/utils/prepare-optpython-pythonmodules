@@ -1,0 +1,145 @@
+#!/bin/bash
+#
+# Installer for all Python related stuff that is needed to run Tapper Testsuites
+#
+# It will do 3 steps:
+# 1) Build a static version of Python
+# 2) Use the local OS Python to install everything to TARGET_DIR
+
+# This script replaces prepare-optpython and prepare-pythonmodule
+
+# Frank Becker <Frank.Becker@amd.com>
+# 2012-10-11
+# Version: 0.1
+
+# Note, only tested on Debian like systems.
+
+set -x
+
+WORKDIR=/tmp/tapper
+SVN=`which svn`
+TAPPER_PREFIX=/opt/tapper/python
+TAPPER_TESTSUITE_MODULES_DIR="${WORKDIR}/modules"
+PIP=`which pip`
+GIT=`which git`
+PYTHON=`which python`
+#TARGET_DIR=${WORKDIR}/target
+TARGET_DIR=${TAPPER_PREFIX}
+
+# Nothing has to be changed below this line
+
+help() {
+    echo "call: $0 [-h]"
+    echo ""
+    echo "Script to install static Python and Tapper Test Suite Wrappers"
+    echo "and pack everything in a tar ball that usually gets extracted "
+    echo "to /opt/tapper/python."
+cat <<-'EOF'
+
+  -h, --help    Show this help.
+EOF
+}
+
+if [ ! -d ${TAPPER_TESTSUITE_DIR} ]; then
+    echo "Did not find Tapper test suite source dir. Please fix config."
+    exit 1
+fi
+
+if [ ! -r ${SVN} ]; then
+    echo "Did not find Tapper test suite source dir. Please fix config."
+    exit 1
+fi
+
+if [ ! -r ${GIT} ]; then
+    echo "Did not find git binary. Please install git."
+    exit 1
+fi
+
+if [ ! -r ${PIP} ]; then
+    echo "Did not find pip Python modules installer. Please install pip."
+    exit 1
+fi
+
+[ -d ${WORKDIR} ] || mkdir -p ${WORKDIR}
+cd ${WORKDIR}
+
+${SVN} checkout http://pts-mini-gpl.googlecode.com/svn/trunk/staticpython staticpython-build
+
+cd staticpython-build
+./build.sh
+cd ../
+
+cd ${WORKDIR}
+mkdir -p $TARGET_DIR
+cd ${TARGET_DIR}
+[ -d "bin" ] || mkdir bin
+cp ${WORKDIR}/staticpython-build/python2.7-static ${TARGET_DIR}/bin/
+
+cat <<-'EOF' > ${TARGET_DIR}/bin/python
+#!/bin/sh
+# wrap static python to find additional packages
+EOF
+
+echo "export PYTHONPATH=${TAPPER_PREFIX}/lib/python/" >> ${TARGET_DIR}/bin/python
+echo "${TAPPER_PREFIX}/bin/python2.7-static \$@" >> ${TARGET_DIR}/bin/python
+
+chmod a+x ${TARGET_DIR}/bin/python
+
+[ -d "${TARGET_DIR}/lib/python" ] || mkdir -p ${TARGET_DIR}/lib/python
+
+cd ..
+
+# Modules prepare
+
+[ -d ${TAPPER_TESTSUITE_MODULES_DIR} ] || mkdir -p ${TAPPER_TESTSUITE_MODULES_DIR}
+rm ${TAPPER_TESTSUITE_MODULES_DIR}/*tar.gz 2>/dev/null
+
+cd ${WORKDIR}
+if [ ! -d OSRC-TestSuites ]; then
+    ${GIT} clone git://wotan/tapper/OSRC-TestSuites
+else
+    cd OSRC-TestSuites
+    ${GIT} pull
+    cd ../
+fi
+
+cd OSRC-TestSuites/python
+grep -v '^#' CLIENTPKG | while read module_dir; do
+    if [ -d ${module_dir} ]; then
+        cd ${module_dir}
+        if [ -f setup.py ]; then
+            echo "Build ${module_dir}"
+            ${PYTHON} setup.py sdist --dist-dir=${TAPPER_TESTSUITE_MODULES_DIR} >/dev/null
+        fi
+        cd ../
+    else
+        echo "Warning: Did not find the module: ${module_dir}! Skipping."
+    fi
+done
+
+
+# Modules install
+VENV=`which virtualenv`
+[ "x${VENV}" == "x" ] && $PIP install virtualenv
+
+virtualenv --no-site-packages --clear ${WORKDIR}/venv
+source ${WORKDIR}/venv/bin/activate
+PIP=`which pip`
+
+[ -d ${WORKDIR}/cache ] || mkdir -p ${WORKDIR}/cache
+
+cd ${TARGET_DIR}
+for module in $(ls $TAPPER_TESTSUITE_MODULES_DIR/*tar.gz 2>/dev/null); do
+    echo "Installing ${module_dir}"
+    $PIP install --upgrade \
+        --download-cache=${WORKDIR}/cache \
+        --install-option="--install-purelib=${TARGET_DIR}/lib/python"  \
+        --install-option="--home=${TARGET_DIR}" \
+        $module
+done
+
+# Pack
+#cd ${TARGET_DIR}
+#tar cfz ../tapper-testsuites-python.tar.gz .
+
+exit 0
