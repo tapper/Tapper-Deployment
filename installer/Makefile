@@ -1239,9 +1239,9 @@ migrate-from-mysql-to-postgres: libdeps createdatabases
 	@echo ""
 	@echo -n "Are you sure (yes/NO)? " ; read ANSWER ; echo $$ANSWER | grep 'yes'
 	$(PERL) $(PERLBIN)/dbicx-backend-move --schema 'Tapper::Schema::ReportsDB' -v --from_dsn '$(REPORTSDB_MYSQL_DSN)' --from_user '$(REPORTSDB_MYSQL_USER)' --from_pass '$(REPORTSDB_MYSQL_PW)' \
-	                                                                              --to_dsn   '$(REPORTSDB_PG_DSN)'    --to_user   '$(REPORTSDB_PG_USER)'    --to_pass   '$(REPORTSDB_PG_PW)'
+	                                                                              --to_dsn   '$(REPORTSDB_PG_DSN)'    --to_user   '$(REPORTSDB_PG_USER)'    --to_pass   '$(REPORTSDB_PG_PW)' --rawmode
 	$(PERL) $(PERLBIN)/dbicx-backend-move --schema 'Tapper::Schema::TestrunDB' -v --from_dsn '$(TESTRUNDB_MYSQL_DSN)' --from_user '$(TESTRUNDB_MYSQL_USER)' --from_pass '$(TESTRUNDB_MYSQL_PW)' \
-	                                                                              --to_dsn   '$(TESTRUNDB_PG_DSN)'    --to_user   '$(TESTRUNDB_PG_USER)'    --to_pass   '$(TESTRUNDB_PG_PW)'
+	                                                                              --to_dsn   '$(TESTRUNDB_PG_DSN)'    --to_user   '$(TESTRUNDB_PG_USER)'    --to_pass   '$(TESTRUNDB_PG_PW)' --rawmode
 	@echo ""
 	@echo ""
 	echo "Migration to PostgreSQL done."
