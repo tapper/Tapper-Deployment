@@ -45,17 +45,17 @@ if [ ! -d ${TAPPER_TESTSUITE_DIR} ]; then
     exit 1
 fi
 
-if [ ! -r ${SVN} ]; then
+if [ "x" == "x${SVN}" ]; then
     echo "Did not find Tapper test suite source dir. Please fix config."
     exit 1
 fi
 
-if [ ! -r ${GIT} ]; then
+if [ "x" == "x${GIT}" ]; then
     echo "Did not find git binary. Please install git."
     exit 1
 fi
 
-if [ ! -r ${PIP} ]; then
+if [ "x" == "x${PIP}" ]; then
     echo "Did not find pip Python modules installer. Please install pip."
     exit 1
 fi
@@ -103,6 +103,18 @@ else
     cd ../
 fi
 
+# venv
+VENV=`which virtualenv`
+[ "x${VENV}" == "x" ] && $PIP install virtualenv
+
+virtualenv --no-site-packages --clear ${WORKDIR}/venv
+source ${WORKDIR}/venv/bin/activate
+
+# now path for pip and python has changed
+PIP=`which pip`
+PYTHON=`which python`
+
+
 cd OSRC-TestSuites/python
 grep -v '^#' CLIENTPKG | while read module_dir; do
     if [ -d ${module_dir} ]; then
@@ -119,13 +131,6 @@ done
 
 
 # Modules install
-VENV=`which virtualenv`
-[ "x${VENV}" == "x" ] && $PIP install virtualenv
-
-virtualenv --no-site-packages --clear ${WORKDIR}/venv
-source ${WORKDIR}/venv/bin/activate
-PIP=`which pip`
-
 [ -d ${WORKDIR}/cache ] || mkdir -p ${WORKDIR}/cache
 
 cd ${TARGET_DIR}
