@@ -50,12 +50,19 @@ do_start()
         echo "and try again."
         exit 1
     fi
-
     echo "Freeing hosts"
-    echo "update host set free=1;" | mysql -utapper -ptapper testrundb
-    echo "update testrun_scheduling set status='finished' where status='running';" | mysql -utapper -ptapper testrundb
-    echo "delete from state;" | mysql -utapper -ptapper testrundb
-    echo "delete from message;" | mysql -utapper -ptapper testrundb
+    DSN=$(/opt/tapper/perl/perls/current/bin/perl -MTapper::Config -E 'print Tapper::Config->subconfig->{database}{TestrunDB}{dsn}')
+    if echo $DSN | grep dbi:Pg ; then
+        echo "update host set free=1;"                                                 | psql -U tapper -d testrundb
+        echo "update testrun_scheduling set status='finished' where status='running';" | psql -U tapper -d testrundb
+        echo "delete from state;"                                                      | psql -U tapper -d testrundb
+        echo "delete from message;"                                                    | psql -U tapper -d testrundb
+    else
+        echo "update host set free=1;"                                                 | mysql -utapper -ptapper testrundb
+        echo "update testrun_scheduling set status='finished' where status='running';" | mysql -utapper -ptapper testrundb
+        echo "delete from state;"                                                      | mysql -utapper -ptapper testrundb
+        echo "delete from message;"                                                    | mysql -utapper -ptapper testrundb
+    fi
 }
 
 #
