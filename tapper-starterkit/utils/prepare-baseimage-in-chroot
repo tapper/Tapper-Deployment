@@ -69,5 +69,6 @@ cd /dev
 
 /tmp/tapper-starterkit/utils/prepare-optperl
 PYTHONSTATICTWEAKS=1 /tmp/tapper-starterkit/utils/prepare-optpython
+#PYTHONSTATICTWEAKS=1 /tmp/tapper-starterkit/utils/prepare-optpython-pythonmodules
 
 # ===========================================================
